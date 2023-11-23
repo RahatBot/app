@@ -1,0 +1,175 @@
+.main {
+  height: 100%;
+  font-family: Mulish-regular;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.username {
+  margin: 5px;
+  text-align: center;
+}
+
+.linebreak {
+  background-color: white;
+  width: 100%;
+  height: 1px;
+  margin: 5px 0;
+}
+
+.pdfElement {
+  display: flex;
+  align-items: center;
+  margin: 1vh 0;
+  background-color: #5c5200;
+}
+
+/* .pdfElement:hover {
+  cursor: pointer;
+  background-color: #5c5200;
+  border-radius: 15px;
+} */
+
+.imageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdfName {
+  width: 80%;
+}
+
+.pdflist {
+  /* height: 90%; */
+  /* overflow: auto; */
+}
+
+.chatHistoryTitle {
+  color: white;
+  padding: 5px;
+  margin-bottom: 2px;
+}
+
+.noHistory{
+  font-family: Mulish-bold;
+  text-align: center;
+}
+
+.chatList {
+  margin-left: 5px;
+  overflow-y: auto;
+  height: 95vh;
+}
+
+.chat {
+  padding: 2px 2px;
+  margin: 2px 0;
+  display: flex;
+}
+
+.chatItem {
+  padding-top: 5px;
+}
+
+.chatItem:hover {
+  border-radius: 15px;
+  cursor: pointer;
+  background-color: #5c5200;
+}
+
+.convDate {
+  font-size: 10px;
+  font-family: Mulish-bold;
+}
+
+.logout {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  padding: 5px;
+  width: 80%;
+  text-align: center;
+  background-color: #5c5200;
+  border-radius: 15px;
+}
+
+.logout:hover {
+  opacity: 0.8;
+}
+
+.logo {
+  min-width: 150px;
+  background-color: white;
+  height: fit-content;
+  width: 100%;
+  margin-top: 1vh;
+  padding: 1vh;
+}
+
+.sideDrawer {
+  background: white;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 200;
+  box-shadow: 1px 0px 7px rgba(0, 0, 0, 0.5);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-out;
+  width: 70% !important;
+}
+
+.open {
+  transform: translateX(0);
+}
+
+.mobileView {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .main {
+    background-color: #b99825;
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .mobileView {
+    display: block;
+  }
+  .pdflist {
+    margin-top: 1vh;
+  }
+  .imageContainer {
+    width: 20% !important;
+  }
+  .username {
+    margin-top: 32px;
+  }
+  .chatList {
+    height: 75vh;
+  }
+  .chatItem:hover{
+    background-color: transparent;
+  }
+  .logout{
+    position: absolute;
+    bottom: 1vh;
+    margin: auto;
+  }
+  .logo {
+    background: #fff;
+    padding: 10px 40px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}
