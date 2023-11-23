@@ -6,5 +6,4 @@ export type UserType = {
 	botUuid?: string;
 	startingMessage?: string;
 };
-
 export type ToChangeCurrentUserType = (arg: User) => void;

@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const jwksClient = require("jwks-rsa");
-
+ 
 var client = jwksClient({
   // eslint-disable-next-line turbo/no-undeclared-env-vars
   jwksUri: process.env.NEXT_PUBLIC_JWKS_URI,

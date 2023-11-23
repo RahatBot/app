@@ -1,4 +1,4 @@
-# Chat with PDF
+# Rahat Bot
 
 
 ## Requirements :scroll:
