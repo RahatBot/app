@@ -63,16 +63,16 @@ const RenderVoiceRecorder = ({ setInputMsg }) => {
         method: 'POST',
         body: formData,
       });
-      
+
       base64 = await base64.text();
       const resp = await axios.post(
         apiEndpoint + '/prompt',
         {
-            text: "",
-            media: {
-              category: 'base64audio',
-              text: base64,
-            },
+          text: '',
+          media: {
+            category: 'base64audio',
+            text: base64,
+          },
         },
         {
           headers: {
@@ -81,7 +81,7 @@ const RenderVoiceRecorder = ({ setInputMsg }) => {
           },
         }
       );
-      console.log(resp)
+      console.log(resp);
       if (resp.status === 201) {
         if (resp.data.text === '')
           throw new Error('Unexpected end of JSON input');
@@ -109,6 +109,7 @@ const RenderVoiceRecorder = ({ setInputMsg }) => {
         {mediaRecorder && mediaRecorder.state === 'recording' ? (
           <div className={styles.center}>
             <Image
+              priority
               src={stop}
               alt="stopIcon"
               onClick={() => {
@@ -121,6 +122,7 @@ const RenderVoiceRecorder = ({ setInputMsg }) => {
         ) : (
           <div className={styles.center}>
             <Image
+              priority
               src={start}
               alt="startIcon"
               onClick={() => startRecording()}
