@@ -43,7 +43,7 @@ function NavBar() {
       return;
     }
 
-  
+
     const newConversationId = uuidv4();
     sessionStorage.setItem('conversationId', newConversationId);
     if (context?.audioElement) context?.audioElement.pause();
@@ -96,7 +96,7 @@ function NavBar() {
         <div
           className={styles.navbar} >
 
-          {/* <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <button
               id="eng"
               className={isEngActive ? styles.active : styles.btn}
@@ -111,7 +111,7 @@ function NavBar() {
               onClick={toggleLanguage('hi')}>
               हिंदी
             </button>
-          </div> */}
+          </div>
 
           <div
           >
@@ -119,7 +119,9 @@ function NavBar() {
 
           </div>
           <div>
+
             <Image src={YogiModiImg} alt="" width={110} height={65} />
+
           </div>
 
         </div>

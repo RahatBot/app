@@ -73,7 +73,24 @@ const ContextProvider: FC<{
   console.log("hola:",{messages});
 
   useEffect(()=>{
-    const initialMsg = localStorage.getItem('locale') ? [] : [{
+  
+    if(localStorage.getItem('locale')){
+      const disasterString=  localStorage.getItem('locale') === 'hi' ? 'सामान्य आपदा, कोरोना वायरस, भूकंप, आग, बाढ़, गर्मी, लू लगना, आतंकवादी हमला, गरज' : 'General Disaster, Corona Virus, Earthquake, Fire, Flood, Heat, Sunstroke, Terrorist Attack, Thunder'
+      const options =[{
+        text: localStorage.getItem('locale')==='hi' ? 'आपदा चुनें' :'Select Disaster',
+        position: 'left',
+        repliedTimestamp: new Date().valueOf(),
+        exampleOptions:false,
+        "payload": {
+          "buttonChoices": disasterString.split(',').map(item=>({key:item,text:item,backmenu:false,hasFullWidth:true})), 
+          "text": "Select Disaster"
+        },
+      }]
+      setMessages(options)
+    }else {
+
+    
+    const initialMsg =  [{
   text: 'Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language',
   position: 'left',
   repliedTimestamp: new Date().valueOf(),
@@ -95,7 +112,7 @@ const ContextProvider: FC<{
   },
 "isIgnore": false,
 }];
-setMessages(initialMsg);
+setMessages(initialMsg);}
   },[])
   async function base64WavToPlayableLink(base64Wav: string): Promise<string> {
     return new Promise((resolve, reject) => {
