@@ -15,6 +15,7 @@ import flagsmith from 'flagsmith/isomorphic';
 import axios from 'axios';
 import React from 'react';
 import { useCookies } from 'react-cookie';
+import { Sidemenu } from '../Sidemenu';
 
 function NavBar() {
   const t = useLocalization();
@@ -95,7 +96,7 @@ function NavBar() {
       <div className={styles.main} style={router.pathname === '/login' ? { height: '120px' } : {}}>
         <div
           className={styles.navbar} >
-
+{/* <Sidemenu /> */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <button
               id="eng"
@@ -111,7 +112,7 @@ function NavBar() {
               onClick={toggleLanguage('hi')}>
               हिंदी
             </button>
-          </div>
+          </div> 
 
           <div
           >
