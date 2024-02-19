@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.List = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
-var List = function List(props) {
+var List = exports.List = function List(props) {
   var _props$bordered = props.bordered,
     bordered = _props$bordered === void 0 ? false : _props$bordered,
     className = props.className,
@@ -19,4 +19,3 @@ var List = function List(props) {
     role: "list"
   }, children);
 };
-exports.List = List;

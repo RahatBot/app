@@ -18,9 +18,8 @@ var style = {
   // border: 0,
   whiteSpace: 'nowrap'
 };
-var VisuallyHidden = function VisuallyHidden(props) {
+var VisuallyHidden = exports.VisuallyHidden = function VisuallyHidden(props) {
   return /*#__PURE__*/_react.default.createElement("span", (0, _extends2.default)({
     style: style
   }, props));
 };
-exports.VisuallyHidden = VisuallyHidden;

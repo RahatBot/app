@@ -1,61 +1,69 @@
-.navbar {
-  display: flex;
-  /* justify-content: center; */
-  align-items: center;
+.main {
+  border-bottom: 1px solid #dbdbdb;
+  height: 100px;
   background-color: var(--bg-color);
-  height: 70px;
-  margin: 1vh 0; 
-  /* margin-bottom: 20px;  */
-  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.2);;
+  position: fixed;
+  top: 0;
+  z-index: 999;
 }
 
-.newChatContainer {
-  flex: 0.1;
-  margin-right: 8px;
-  margin-left: 8px;
-  display: flex;
-  flex-direction: column;
-  color: var(--font);
-  align-items: center;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.navbarHeading{
-  text-align: center;
+.navbar {
   margin: auto;
-  color: var(--secondary);
-  font-size: 18px;
-  font-weight: bold;
-  font-family: 'Mulish-bold', sans-serif;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100vw;
+  padding: 10px;
 }
 
-.imageContainer {
+.title {
+  margin-top: -12px;
+  font-family: 'Mulish-demi';
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--secondarygreen);
+}
+
+.imageContainer,
+.imageContainer2 {
+  cursor: pointer;
   display: flex;
-  flex-direction: row-reverse;
   align-items: center;
 }
 
-.mobileView{
-  display: none;
+.imageContainer2 {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  /* width: 100px; */
 }
 
-.hamburgerIcon {
-  margin-left: 8px;
-  display: none; /* Hide the hamburger icon by default */
+.rightSideIcons {
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
-/* Media query for mobile view */
-@media (max-width: 767px) {
-  .hamburgerIcon {
-    display: block; /* Show the hamburger icon on mobile view */
-    position: sticky;
-    z-index: 9999;
-  }
-  .mobileView{
-    display: block;
-  }
-  .navbar{
-    width: 100vw;
-  }
+.rightSideIcons div {
+  margin: 1.5vh;
+}
+
+.btn {
+  background: var(--lightgrey);
+  width: 60px;
+  height: 30px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #4f4f4f;
+  outline: none;
+  border: none;
+}
+
+.active {
+  background: var(--primary);
+  color: white;
+  width: 60px;
+  height: 30px;
+  outline: none;
+  border: none;
 }

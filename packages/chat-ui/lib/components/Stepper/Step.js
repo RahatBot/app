@@ -26,7 +26,7 @@ function renderDot(status) {
     className: "Step-dot"
   });
 }
-var Step = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var Step = exports.Step = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var className = props.className,
     _props$active = props.active,
     active = _props$active === void 0 ? false : _props$active,
@@ -61,4 +61,3 @@ var Step = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     className: "Step-desc"
   }, desc), children));
 });
-exports.Step = Step;

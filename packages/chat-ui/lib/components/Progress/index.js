@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["className", "value", "status", "children"];
-var Progress = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var Progress = exports.Progress = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var className = props.className,
     value = props.value,
     status = props.status,
@@ -30,4 +30,3 @@ var Progress = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     "aria-valuemax": 100
   }, children));
 });
-exports.Progress = Progress;

@@ -8,7 +8,7 @@ exports.RadioGroup = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _Radio = require("./Radio");
-var RadioGroup = function RadioGroup(props) {
+var RadioGroup = exports.RadioGroup = function RadioGroup(props) {
   var className = props.className,
     options = props.options,
     value = props.value,
@@ -34,4 +34,3 @@ var RadioGroup = function RadioGroup(props) {
     });
   }));
 };
-exports.RadioGroup = RadioGroup;

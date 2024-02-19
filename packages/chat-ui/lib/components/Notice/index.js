@@ -9,7 +9,7 @@ var _react = _interopRequireDefault(require("react"));
 var _Icon = require("../Icon");
 var _IconButton = require("../IconButton");
 var _Text = require("../Text");
-var Notice = function Notice(props) {
+var Notice = exports.Notice = function Notice(props) {
   var content = props.content,
     _props$closable = props.closable,
     closable = _props$closable === void 0 ? true : _props$closable,
@@ -38,4 +38,3 @@ var Notice = function Notice(props) {
     "aria-label": "\u5173\u95ED\u901A\u77E5"
   }));
 };
-exports.Notice = Notice;

@@ -21,7 +21,7 @@ function show(content, type, duration) {
     duration: duration
   }));
 }
-var toast = {
+var toast = exports.toast = {
   show: show,
   success: function success(content, duration) {
     show(content, 'success', duration);
@@ -33,4 +33,3 @@ var toast = {
     show(content, 'loading', duration);
   }
 };
-exports.toast = toast;

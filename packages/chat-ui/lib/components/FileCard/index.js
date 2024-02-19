@@ -13,7 +13,7 @@ var _Icon = require("../Icon");
 var _Text = require("../Text");
 var _getExtName = _interopRequireDefault(require("../../utils/getExtName"));
 var _prettyBytes = _interopRequireDefault(require("../../utils/prettyBytes"));
-var FileCard = function FileCard(props) {
+var FileCard = exports.FileCard = function FileCard(props) {
   var className = props.className,
     file = props.file,
     extension = props.extension,
@@ -43,4 +43,3 @@ var FileCard = function FileCard(props) {
     className: "FileCard-size"
   }, (0, _prettyBytes.default)(size)), children))));
 };
-exports.FileCard = FileCard;

@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["className", "position", "children"];
-var Divider = function Divider(props) {
+var Divider = exports.Divider = function Divider(props) {
   var className = props.className,
     _props$position = props.position,
     position = _props$position === void 0 ? 'center' : _props$position,
@@ -21,4 +21,3 @@ var Divider = function Divider(props) {
     role: "separator"
   }, other), children);
 };
-exports.Divider = Divider;

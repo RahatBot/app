@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.Toolbar = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _ToolbarButton = require("./ToolbarButton");
-var Toolbar = function Toolbar(props) {
+var Toolbar = exports.Toolbar = function Toolbar(props) {
   var items = props.items,
     onClick = props.onClick;
   return /*#__PURE__*/_react.default.createElement("div", {
@@ -20,4 +20,3 @@ var Toolbar = function Toolbar(props) {
     });
   }));
 };
-exports.Toolbar = Toolbar;

@@ -12,7 +12,7 @@ var _clsx = _interopRequireDefault(require("clsx"));
 var _useForwardRef = _interopRequireDefault(require("../../hooks/useForwardRef"));
 var _getToBottom = _interopRequireDefault(require("../../utils/getToBottom"));
 var _excluded = ["className", "disabled", "distance", "children", "onLoadMore", "onScroll"];
-var InfiniteScroll = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var InfiniteScroll = exports.InfiniteScroll = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var className = props.className,
     disabled = props.disabled,
     _props$distance = props.distance,
@@ -40,4 +40,3 @@ var InfiniteScroll = /*#__PURE__*/_react.default.forwardRef(function (props, ref
     ref: wrapperRef
   }, other), children);
 });
-exports.InfiniteScroll = InfiniteScroll;

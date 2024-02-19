@@ -51,5 +51,4 @@ function useMount(_ref) {
     isShow: isShow
   };
 }
-var _default = useMount;
-exports.default = _default;
+var _default = exports.default = useMount;

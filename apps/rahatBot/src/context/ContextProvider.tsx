@@ -29,12 +29,14 @@ function loadMessages(locale: string) {
   }
 }
 
+
 const ContextProvider: FC<{
   locale: any;
   localeMsgs: any;
   setLocale: any;
   children: ReactElement;
 }> = ({ locale, children, localeMsgs, setLocale }) => {
+  
   const t = useLocalization();
   const [collapsed, setCollapsed] = useState(false); // LeftSide menu bar
   const [pdfList, setPdfList] = useState<any[]>([]);
@@ -68,8 +70,33 @@ const ContextProvider: FC<{
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [clickedAudioUrl, setClickedAudioUrl] = useState<string | null>(null);
 
-  console.log(messages);
+  console.log("hola:",{messages});
 
+  useEffect(()=>{
+    const initialMsg = localStorage.getItem('locale') ? [] : [{
+  text: 'Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language',
+  position: 'left',
+  repliedTimestamp: new Date().valueOf(),
+  exampleOptions:true,
+  "payload": {
+    "buttonChoices": [
+      {
+        "key": "hi",
+        "text": "Hindi",
+        "backmenu": false
+      },
+      {
+        "key": "en",
+        "text": "English",
+        "backmenu": false
+      },
+    ],
+    "text": "Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language "
+  },
+"isIgnore": false,
+}];
+setMessages(initialMsg);
+  },[])
   async function base64WavToPlayableLink(base64Wav: string): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
@@ -353,6 +380,7 @@ const ContextProvider: FC<{
         const data = {
           "text": text,
           "media": "",
+          "inputLangugae": locale || 'en'
         }
 
         try {

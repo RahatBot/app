@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["className", "placeholder", "variant", "children"];
-var Select = /*#__PURE__*/_react.default.forwardRef(function (_ref, ref) {
+var Select = exports.Select = /*#__PURE__*/_react.default.forwardRef(function (_ref, ref) {
   var className = _ref.className,
     placeholder = _ref.placeholder,
     _ref$variant = _ref.variant,
@@ -25,4 +25,3 @@ var Select = /*#__PURE__*/_react.default.forwardRef(function (_ref, ref) {
     value: ""
   }, placeholder), children);
 });
-exports.Select = Select;

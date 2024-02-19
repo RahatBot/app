@@ -46,6 +46,14 @@
 }
 
 :root {
+  --font: #000000B5;
+  --lightgrey: #D0D0D0;
+  --grey: #828282;
+  --darkgrey: #333232;
+  --primary: #F5952E;
+  --primarygreen: #D2F4E0;
+  --secondarygreen: #1E6231;
+  --tertiarygreen: #003A00;
   --font: #000000b5;
   --grey: #d0d0d0;
   --darkgrey: #333232;
@@ -58,7 +66,8 @@
   --primaryblue: #b99825;
   --red: #be0f39;
   --golden: #d4c17b;
-  --bg-color: #fff;
+  --bg-color: #F6FAFF;
+  --primary: #F5952E;
 }
 .font-primary {
   color: var(--primarydarkblue);
@@ -78,6 +87,7 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   min-height: 100vh;
+  background-color: var(--bg-color) !important;
 }
 
 .flex {

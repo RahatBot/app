@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.MediaObject = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
-var MediaObject = function MediaObject(props) {
+var MediaObject = exports.MediaObject = function MediaObject(props) {
   var className = props.className,
     picUrl = props.picUrl,
     picSize = props.picSize,
@@ -29,4 +29,3 @@ var MediaObject = function MediaObject(props) {
     className: "MediaObject-meta"
   }, meta)));
 };
-exports.MediaObject = MediaObject;

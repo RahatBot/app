@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["type", "className", "spin", "name"];
-var Icon = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var Icon = exports.Icon = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var type = props.type,
     className = props.className,
     spin = props.spin,
@@ -63,4 +63,3 @@ var Icon = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     xlinkHref: "#icon-".concat(type)
   }));
 });
-exports.Icon = Icon;

@@ -9,7 +9,7 @@ var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends")
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _IconButton = require("../IconButton");
-var Navbar = function Navbar(props) {
+var Navbar = exports.Navbar = function Navbar(props) {
   var className = props.className,
     title = props.title,
     logo = props.logo,
@@ -40,4 +40,3 @@ var Navbar = function Navbar(props) {
     }));
   })));
 };
-exports.Navbar = Navbar;

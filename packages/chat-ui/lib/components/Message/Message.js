@@ -63,5 +63,4 @@ var Message = function Message(props) {
     "aria-atomic": "false"
   }, type === 'typing' ? /*#__PURE__*/_react.default.createElement(_Typing.Typing, null) : renderMessageContent(msg)))));
 };
-var _default = /*#__PURE__*/_react.default.memo(Message);
-exports.default = _default;
+var _default = exports.default = /*#__PURE__*/_react.default.memo(Message);

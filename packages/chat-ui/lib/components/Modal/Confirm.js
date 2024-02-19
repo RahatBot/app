@@ -15,7 +15,7 @@ var _excluded = ["className", "vertical", "actions"];
 var isPrimary = function isPrimary(btn) {
   return btn.color === 'primary';
 };
-var Confirm = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var Confirm = exports.Confirm = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var className = props.className,
     oVertical = props.vertical,
     actions = props.actions,
@@ -48,4 +48,3 @@ var Confirm = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     ref: ref
   }, other));
 });
-exports.Confirm = Confirm;

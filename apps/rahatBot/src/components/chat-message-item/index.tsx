@@ -60,6 +60,22 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
     setReaction(message?.content?.data?.reaction);
   }, [message?.content?.data?.reaction]);
 
+
+  const showDisasterOptions =useCallback((lang:string)=>{
+    const disasterString=  lang === 'hi' ? 'सामान्य आपदा, कोरोना वायरस, भूकंप, आग, बाढ़, गर्मी, लू लगना, आतंकवादी हमला, गरज' : 'General Disaster, Corona Virus, Earthquake, Fire, Flood, Heat, Sunstroke, Terrorist Attack, Thunder'
+    const options =[{
+      text: lang==='hi' ? 'आपदा चुनें' :'Select Disaster',
+      position: 'left',
+      repliedTimestamp: new Date().valueOf(),
+      exampleOptions:false,
+      "payload": {
+        "buttonChoices": disasterString.split(',').map(item=>({key:item,text:item,backmenu:false,hasFullWidth:true})), 
+        "text": "Select Disaster"
+      },
+    }]
+    context?.setMessages((prev:any)=>([...prev,...options]))
+  },[context]);
+
   const onLikeDislike = useCallback(
     ({ value, msgId }: { value: 0 | 1 | -1; msgId: string }) => {
       let url = getReactionUrl({ msgId, reaction: value });
@@ -120,39 +136,43 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
 
   const getLists = useCallback(
     ({ choices, isDisabled }: { choices: any; isDisabled: boolean }) => {
-      console.log('qwer12:', { choices, isDisabled });
+      console.log('hola qwer12:', { choices, isDisabled ,isFull:!context?.messages?.[0]?.exampleOptions });
       return (
-        <List className={`${styles.list}`}>
+        <List className={`${context?.messages?.[0]?.exampleOptions ? styles.list : styles.fullList}`}>
           {choices?.map((choice: any, index: string) => (
             // {_.map(choices ?? [], (choice, index) => (
             <ListItem
               key={`${index}_${choice?.key}`}
-              className={`${styles.onHover} ${styles.listItem}`}
+              className={`${styles.onHover} ${choice?.hasFullWidth ?   styles.fullListItem: styles.listItem}`}
               onClick={(e: any): void => {
                 e.preventDefault();
-                console.log('qwer12 trig', { key: choice.key, isDisabled });
+                console.log('hola', { key: choice.key, isDisabled });
                 if (isDisabled) {
                   toast.error(`${t('message.cannot_answer_again')}`);
                 } else {
                   if (context?.messages?.[0]?.exampleOptions) {
                     console.log('clearing chat');
+                    console.log("hola:",{key:choice?.key})
                     context?.setMessages([]);
-                  }
-                  // context?.sendMessage(choice.text);
+                    localStorage.setItem('locale',choice?.key)
+                    context?.setLocale(choice?.key)
+                    showDisasterOptions(choice?.key);
+                  } 
+                  else  context?.sendMessage(choice.text);
                 }
               }}>
-              <div className="onHover" style={{ display: 'flex' }}>
-                <div>{choice.text}</div>
-                <div style={{ marginLeft: 'auto' }}>
+              <div className="onHover" >
+                <div style={{textAlign:'center'}}>{choice.text}</div>
+                {/* <div style={{ marginLeft: 'auto' }}>
                   <RightIcon width="5.5vh" color="var(--secondary)" />
-                </div>
+                </div> */}
               </div>
             </ListItem>
           ))}
         </List>
       );
     },
-    [context, t]
+    [context, showDisasterOptions, t]
   );
 
   // useEffect(() => {
@@ -230,7 +250,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
   };
 
   const { content, type } = message;
-
+console.log({content})
   const handleAudio = (url: any) => {
     // console.log(url)
     if (!url) {
@@ -385,7 +405,42 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
           )}
         </div>
       );
-
+   case 'options':{
+    return    <Bubble type="text">
+    <div style={{ display: "flex" }}>
+      <span
+        style={{ fontSize: "16px" }}
+        dangerouslySetInnerHTML={{ __html: `${content.text}` }}
+      ></span>
+    </div>
+    <div style={{ marginTop: "10px" }} />
+    {getLists({
+      choices:
+        content?.data?.payload?.buttonChoices ?? content?.data?.choices,
+      isDisabled: content?.data?.disabled,
+    })}
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "self-end",
+      }}
+    >
+      <span style={{ color: "var(--grey)", fontSize: "10px" }}>
+        {/* {moment
+          .utc(
+            content?.data?.sentTimestamp ||
+              content?.data?.repliedTimestamp
+          )
+          .local()
+          .format("DD/MM/YYYY : hh:mm")} */}
+      </span>
+      <span>
+        
+      </span>
+    </div>
+  </Bubble>
+   }
     case 'image': {
       const url = content?.data?.payload?.media?.url || content?.data?.imageUrl;
       return (
@@ -492,12 +547,8 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
       );
     }
     case 'options': {
-      console.log('qwe12:', { content });
       return (
         <>
-          {/* <div
-            style={{ width: "95px", marginRight: "4px", textAlign: "center" }}
-          ></div> */}
           <Bubble type="text" className={styles.textBubble}>
             <div style={{ display: 'flex' }}>
               <span className={styles.optionsText}>

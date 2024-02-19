@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.SystemMessage = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
-var SystemMessage = function SystemMessage(props) {
+var SystemMessage = exports.SystemMessage = function SystemMessage(props) {
   var className = props.className,
     content = props.content,
     action = props.action;
@@ -20,4 +20,3 @@ var SystemMessage = function SystemMessage(props) {
     onClick: action.onClick
   }, action.text)));
 };
-exports.SystemMessage = SystemMessage;

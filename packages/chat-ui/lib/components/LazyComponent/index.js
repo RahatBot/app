@@ -12,7 +12,7 @@ var _SuspenseWrap = require("./SuspenseWrap");
 var _useComponents2 = require("../ComponentsProvider/useComponents");
 var _excluded = ["code", "fallback", "onLoad", "onError"],
   _excluded2 = ["component", "code", "onLoad"];
-var LazyComponentWithCode = function LazyComponentWithCode(props) {
+var LazyComponentWithCode = exports.LazyComponentWithCode = function LazyComponentWithCode(props) {
   var code = props.code,
     fallback = props.fallback,
     onLoad = props.onLoad,
@@ -33,8 +33,7 @@ var LazyComponentWithCode = function LazyComponentWithCode(props) {
     fallback: fallback
   }, rest));
 };
-exports.LazyComponentWithCode = LazyComponentWithCode;
-var LazyComponent = function LazyComponent(props) {
+var LazyComponent = exports.LazyComponent = function LazyComponent(props) {
   var component = props.component,
     code = props.code,
     onLoad = props.onLoad,
@@ -55,6 +54,4 @@ var LazyComponent = function LazyComponent(props) {
     onLoad: onLoad
   }, rest));
 };
-exports.LazyComponent = LazyComponent;
-var _default = LazyComponent;
-exports.default = _default;
+var _default = exports.default = LazyComponent;

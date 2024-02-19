@@ -8,7 +8,7 @@ exports.CheckboxGroup = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _Checkbox = require("./Checkbox");
-var CheckboxGroup = function CheckboxGroup(props) {
+var CheckboxGroup = exports.CheckboxGroup = function CheckboxGroup(props) {
   var className = props.className,
     options = props.options,
     value = props.value,
@@ -40,4 +40,3 @@ var CheckboxGroup = function CheckboxGroup(props) {
     });
   }));
 };
-exports.CheckboxGroup = CheckboxGroup;

@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _default = {
+var _default = exports.default = {
   BackBottom: {
     newMsgOne: '{n}条新消息',
     newMsgOther: '{n}条新消息',
@@ -22,7 +22,6 @@ var _default = {
       YT: '昨天 HH:mm' // 昨天 00:32
     }
   },
-
   Composer: {
     send: '发送'
   },
@@ -45,4 +44,3 @@ var _default = {
     search: '搜索'
   }
 };
-exports.default = _default;

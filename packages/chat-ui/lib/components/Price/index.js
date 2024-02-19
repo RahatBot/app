@@ -13,7 +13,7 @@ var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["className", "price", "currency", "locale", "original"];
 /* eslint-disable react/no-array-index-key */
 var canFormat = 'Intl' in window && typeof Intl.NumberFormat.prototype.formatToParts === 'function';
-var Price = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var Price = exports.Price = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var className = props.className,
     price = props.price,
     currency = props.currency,
@@ -61,4 +61,3 @@ var Price = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     }, t.value) : null;
   }));
 });
-exports.Price = Price;

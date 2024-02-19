@@ -8,7 +8,7 @@ exports.Loading = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _Flex = require("../Flex");
 var _Icon = require("../Icon");
-var Loading = function Loading(props) {
+var Loading = exports.Loading = function Loading(props) {
   var tip = props.tip,
     children = props.children;
   return /*#__PURE__*/_react.default.createElement(_Flex.Flex, {
@@ -21,4 +21,3 @@ var Loading = function Loading(props) {
     className: "Loading-tip"
   }, tip), children);
 };
-exports.Loading = Loading;

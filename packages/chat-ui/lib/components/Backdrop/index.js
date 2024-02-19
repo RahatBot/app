@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["className", "active", "onClick"];
-var Backdrop = function Backdrop(props) {
+var Backdrop = exports.Backdrop = function Backdrop(props) {
   var className = props.className,
     active = props.active,
     onClick = props.onClick,
@@ -25,4 +25,3 @@ var Backdrop = function Backdrop(props) {
     "aria-hidden": true
   }, rest));
 };
-exports.Backdrop = Backdrop;

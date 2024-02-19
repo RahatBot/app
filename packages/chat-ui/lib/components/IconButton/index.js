@@ -12,7 +12,7 @@ var _clsx = _interopRequireDefault(require("clsx"));
 var _Button = require("../Button");
 var _Icon = require("../Icon");
 var _excluded = ["className", "icon", "img"];
-var IconButton = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var IconButton = exports.IconButton = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var className = props.className,
     icon = props.icon,
     img = props.img,
@@ -27,4 +27,3 @@ var IconButton = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     alt: ""
   }));
 });
-exports.IconButton = IconButton;

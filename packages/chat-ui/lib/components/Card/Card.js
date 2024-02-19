@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["className", "size", "fluid", "children"];
-var Card = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var Card = exports.Card = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var className = props.className,
     size = props.size,
     fluid = props.fluid,
@@ -25,4 +25,3 @@ var Card = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     ref: ref
   }), children);
 });
-exports.Card = Card;

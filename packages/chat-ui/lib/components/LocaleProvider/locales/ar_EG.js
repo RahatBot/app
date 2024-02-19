@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _default = {
+var _default = exports.default = {
   BackBottom: {
     newMsgOne: '{n} رسالة جديدة',
     newMsgOther: '{n} رسالة جديدة',
@@ -41,4 +41,3 @@ var _default = {
     search: 'يبحث'
   }
 };
-exports.default = _default;

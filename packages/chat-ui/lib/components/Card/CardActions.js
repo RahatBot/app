@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["children", "className", "direction"];
-var CardActions = function CardActions(props) {
+var CardActions = exports.CardActions = function CardActions(props) {
   var children = props.children,
     className = props.className,
     direction = props.direction,
@@ -19,4 +19,3 @@ var CardActions = function CardActions(props) {
     className: (0, _clsx.default)('CardActions', className, direction && "CardActions--".concat(direction))
   }, other), children);
 };
-exports.CardActions = CardActions;

@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.CarouselItem = void 0;
 var _react = _interopRequireDefault(require("react"));
-var CarouselItem = function CarouselItem(props) {
+var CarouselItem = exports.CarouselItem = function CarouselItem(props) {
   var width = props.width,
     children = props.children;
   return /*#__PURE__*/_react.default.createElement("div", {
@@ -16,4 +16,3 @@ var CarouselItem = function CarouselItem(props) {
     }
   }, children);
 };
-exports.CarouselItem = CarouselItem;

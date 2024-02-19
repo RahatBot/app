@@ -11,7 +11,7 @@ var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _Flex = require("../Flex");
 var _excluded = ["className", "aspectRatio", "color", "image", "children"];
-var CardMedia = function CardMedia(props) {
+var CardMedia = exports.CardMedia = function CardMedia(props) {
   var className = props.className,
     _props$aspectRatio = props.aspectRatio,
     aspectRatio = _props$aspectRatio === void 0 ? 'square' : _props$aspectRatio,
@@ -35,4 +35,3 @@ var CardMedia = function CardMedia(props) {
     center: true
   }, children));
 };
-exports.CardMedia = CardMedia;

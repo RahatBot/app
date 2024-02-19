@@ -10,7 +10,7 @@ var _clsx = _interopRequireDefault(require("clsx"));
 var _Flex = require("../Flex");
 var IMAGE_EMPTY = '//gw.alicdn.com/tfs/TB1fnnLRkvoK1RjSZFDXXXY3pXa-300-250.svg';
 var IMAGE_OOPS = '//gw.alicdn.com/tfs/TB1lRjJRbvpK1RjSZPiXXbmwXXa-300-250.svg';
-var Empty = function Empty(props) {
+var Empty = exports.Empty = function Empty(props) {
   var className = props.className,
     type = props.type,
     image = props.image,
@@ -29,4 +29,3 @@ var Empty = function Empty(props) {
     className: "Empty-tip"
   }, tip), children);
 };
-exports.Empty = Empty;
