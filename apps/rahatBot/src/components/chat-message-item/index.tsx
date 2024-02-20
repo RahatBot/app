@@ -68,7 +68,8 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
           : "General Disaster, Corona Virus, Earthquake, Flood, Heat, Sunstroke, Terrorist Attack, Thunder";
       const options = [
         {
-          text: lang === "hi" ? "आपदा चुनें" : "Select Disaster",
+        //  text: lang === "hi" ? "आपदा चुनें" : "Select Disaster",
+          text: t('label.disasterList') ,
           position: "left",
           repliedTimestamp: new Date().valueOf(),
           exampleOptions: false,
@@ -81,16 +82,17 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                 backmenu: false,
                 hasFullWidth: true,
               })),
-            text: "Select Disaster",
+            text: t('label.disasterList'),
           },
         },
       ];
       context?.setMessages((prev: any) => [...prev, ...options]);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [context?.setMessages]
+    [context?.setMessages,t]
   );
 
+  
   const onLikeDislike = useCallback(
     ({ value, msgId }: { value: 0 | 1 | -1; msgId: string }) => {
       let url = getReactionUrl({ msgId, reaction: value });

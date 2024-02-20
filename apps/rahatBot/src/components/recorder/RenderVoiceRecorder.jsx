@@ -73,6 +73,7 @@ const RenderVoiceRecorder = ({ setInputMsg }) => {
             category: 'base64audio',
             text: base64,
           },
+          inputLanguage: context?.locale || 'en'
         },
         {
           headers: {

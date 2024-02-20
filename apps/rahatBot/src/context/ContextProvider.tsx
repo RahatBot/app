@@ -73,14 +73,15 @@ const ContextProvider: FC<{
     if (localStorage.getItem("locale")) {
       const disasterString =
         localStorage.getItem("locale") === "hi"
-          ? "सामान्य आपदा, कोरोना वायरस, भूकंप, आग, बाढ़, गर्मी, लू लगना, आतंकवादी हमला, गरज"
-          : "General Disaster, Corona Virus, Earthquake, Fire, Flood, Heat, Sunstroke, Terrorist Attack, Thunder";
+          ? "सामान्य आपदा, कोरोना वायरस, भूकंप, बाढ़, गर्मी, लू लगना, आतंकवादी हमला, गरज"
+          : "General Disaster, Corona Virus, Earthquake, Flood, Heat, Sunstroke, Terrorist Attack, Thunder";
       const options = [
         {
-          text:
-            localStorage.getItem("locale") === "hi"
-              ? "आपदा चुनें"
-              : "Select Disaster",
+          // text:
+          //   localStorage.getItem("locale") === "hi"
+          //     ? "आपदा चुनें"
+          //     : "Select Disaster",
+          text: t('label.disasterList'),
           position: "left",
           repliedTimestamp: new Date().valueOf(),
           exampleOptions: false,
@@ -93,7 +94,7 @@ const ContextProvider: FC<{
                 backmenu: false,
                 hasFullWidth: true,
               })),
-            text: "Select Disaster",
+          text: t('label.disasterList'),
           },
         },
       ];
@@ -125,7 +126,7 @@ const ContextProvider: FC<{
       ];
       setMessages(initialMsg);
     }
-  }, []);
+  }, [t]);
   async function base64WavToPlayableLink(base64Wav: string): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
@@ -365,6 +366,7 @@ const ContextProvider: FC<{
   //@ts-ignore
   const sendMessage = useCallback(
     async (text: string, media: any) => {
+      console.log("holai:",{text,media})
       // if (
       //   !localStorage.getItem('userID') ||
       //   !sessionStorage.getItem('conversationId')
@@ -460,7 +462,7 @@ const ContextProvider: FC<{
         }
       }
     },
-    [currentUser?.id, onMessageReceived]
+    [currentUser?.id, locale, onMessageReceived]
   );
 
   const fetchIsDown = useCallback(async () => {
