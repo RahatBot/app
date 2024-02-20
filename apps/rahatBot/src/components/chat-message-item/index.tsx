@@ -64,8 +64,8 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
     (lang: string) => {
       const disasterString =
         lang === "hi"
-          ? "सामान्य आपदा, कोरोना वायरस, भूकंप, आग, बाढ़, गर्मी, लू लगना, आतंकवादी हमला, गरज"
-          : "General Disaster, Corona Virus, Earthquake, Fire, Flood, Heat, Sunstroke, Terrorist Attack, Thunder";
+          ? "सामान्य आपदा, कोरोना वायरस, भूकंप, बाढ़, गर्मी, लू लगना, आतंकवादी हमला, गरज"
+          : "General Disaster, Corona Virus, Earthquake, Flood, Heat, Sunstroke, Terrorist Attack, Thunder";
       const options = [
         {
           text: lang === "hi" ? "आपदा चुनें" : "Select Disaster",
@@ -94,7 +94,11 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
   const onLikeDislike = useCallback(
     ({ value, msgId }: { value: 0 | 1 | -1; msgId: string }) => {
       let url = getReactionUrl({ msgId, reaction: value });
-
+      if (value === -1) {
+        context?.setCurrentQuery(msgId);
+        context?.setShowDialerPopup(true);
+        return
+      }
       axios
         .get(url, {
           // headers: {
@@ -102,12 +106,13 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
           // },
         })
         .then((res: any) => {
-          if (value === -1) {
-            context?.setCurrentQuery(msgId);
-            context?.setShowDialerPopup(true);
-          } else {
+          // if (value === -1) {
+          //   context?.setCurrentQuery(msgId);
+          //   context?.setShowDialerPopup(true);
+          // } 
+          
             toast.success(`${getToastMessage(t, value)}`);
-          }
+          
         })
         .catch((error: any) => {
           console.error(error);
@@ -159,18 +164,16 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
       });
       return (
         <List
-          className={`${
-            context?.messages?.[0]?.exampleOptions
+          className={`${context?.messages?.[0]?.exampleOptions
               ? styles.list
               : styles.fullList
-          }`}
+            }`}
         >
           {choices?.map((choice: any, index: string) => (
             <ListItem
               key={`${index}_${choice?.key}`}
-              className={`${styles.onHover} ${
-                choice?.hasFullWidth ? styles.fullListItem : styles.listItem
-              }`}
+              className={`${styles.onHover} ${choice?.hasFullWidth ? styles.fullListItem : styles.listItem
+                }`}
               onClick={(e: any): void => {
                 e.preventDefault();
                 console.log("hola", { key: choice.key, isDisabled });
@@ -367,7 +370,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
               >
                 {getFormatedTime(
                   content?.data?.sentTimestamp ||
-                    content?.data?.repliedTimestamp
+                  content?.data?.repliedTimestamp
                 )}
               </span>
             </div>
@@ -503,7 +506,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                 <span style={{ color: "var(--font)", fontSize: "10px" }}>
                   {getFormatedTime(
                     content?.data?.sentTimestamp ||
-                      content?.data?.repliedTimestamp
+                    content?.data?.repliedTimestamp
                   )}
                 </span>
               </div>
@@ -539,7 +542,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                 <span style={{ color: "var(--font)", fontSize: "10px" }}>
                   {getFormatedTime(
                     content?.data?.sentTimestamp ||
-                      content?.data?.repliedTimestamp
+                    content?.data?.repliedTimestamp
                   )}
                 </span>
               </div>
@@ -579,7 +582,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                 <span style={{ color: "var(--font)", fontSize: "10px" }}>
                   {getFormatedTime(
                     content?.data?.sentTimestamp ||
-                      content?.data?.repliedTimestamp
+                    content?.data?.repliedTimestamp
                   )}
                 </span>
               </div>
@@ -588,7 +591,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
         </>
       );
     }
-   
+
     default:
       return (
         <ScrollView

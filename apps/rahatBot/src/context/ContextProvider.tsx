@@ -414,7 +414,7 @@ const ContextProvider: FC<{
         const data = {
           text: text,
           media: "",
-          inputLangugae: locale || "en",
+          inputLanguage: locale || "en",
         };
 
         try {

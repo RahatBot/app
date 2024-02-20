@@ -37,7 +37,7 @@ const DialerPopup: React.FC<any> = ({ setShowDialerPopup }) => {
       console.log("holai",{context})
       axios
         .post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/feedback/${context?.currentQuery}`,
+          `${process.env.NEXT_PUBLIC_BASE_URL}/user/message/dislike/${context?.currentQuery}`,
           {
             feedback,
           },
@@ -113,164 +113,164 @@ const DialerPopup: React.FC<any> = ({ setShowDialerPopup }) => {
     [review]
   );
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (suggestions.length > 0) {
-        if (e.key === "ArrowUp") {
-          e.preventDefault();
-          setActiveSuggestion((prevActiveSuggestion) =>
-            prevActiveSuggestion > 0
-              ? prevActiveSuggestion - 1
-              : prevActiveSuggestion
-          );
-        } else if (e.key === "ArrowDown") {
-          e.preventDefault();
-          setActiveSuggestion((prevActiveSuggestion) =>
-            prevActiveSuggestion < suggestions.length - 1
-              ? prevActiveSuggestion + 1
-              : prevActiveSuggestion
-          );
-        } else if (e.key === " ") {
-          e.preventDefault();
-          if (activeSuggestion >= 0 && activeSuggestion < suggestions?.length) {
-            suggestionClickHandler(suggestions[activeSuggestion]);
-            setSuggestions([]);
-          } else {
-            setReview((prevInputMsg) => prevInputMsg + " ");
-          }
-        } else if (e.key === "Enter") {
-          e.preventDefault();
-          submitReview(review);
-        }
-      }
-    },
-    [
-      activeSuggestion,
-      review,
-      submitReview,
-      suggestionClickHandler,
-      suggestions,
-    ]
-  );
+  // const handleKeyDown = useCallback(
+  //   (e: KeyboardEvent) => {
+  //     if (suggestions.length > 0) {
+  //       if (e.key === "ArrowUp") {
+  //         e.preventDefault();
+  //         setActiveSuggestion((prevActiveSuggestion) =>
+  //           prevActiveSuggestion > 0
+  //             ? prevActiveSuggestion - 1
+  //             : prevActiveSuggestion
+  //         );
+  //       } else if (e.key === "ArrowDown") {
+  //         e.preventDefault();
+  //         setActiveSuggestion((prevActiveSuggestion) =>
+  //           prevActiveSuggestion < suggestions.length - 1
+  //             ? prevActiveSuggestion + 1
+  //             : prevActiveSuggestion
+  //         );
+  //       } else if (e.key === " ") {
+  //         e.preventDefault();
+  //         if (activeSuggestion >= 0 && activeSuggestion < suggestions?.length) {
+  //           suggestionClickHandler(suggestions[activeSuggestion]);
+  //           setSuggestions([]);
+  //         } else {
+  //           setReview((prevInputMsg) => prevInputMsg + " ");
+  //         }
+  //       } else if (e.key === "Enter") {
+  //         e.preventDefault();
+  //         submitReview(review);
+  //       }
+  //     }
+  //   },
+  //   [
+  //     activeSuggestion,
+  //     review,
+  //     submitReview,
+  //     suggestionClickHandler,
+  //     suggestions,
+  //   ]
+  // );
 
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
+  // useEffect(() => {
+  //   document.addEventListener("keydown", handleKeyDown);
 
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [handleKeyDown]);
+  //   return () => {
+  //     document.removeEventListener("keydown", handleKeyDown);
+  //   };
+  // }, [handleKeyDown]);
 
-  useEffect(() => {
-    if (
-      review &&
-      review.length > 0 &&
-      !(localStorage.getItem("locale") === "en")
-    ) {
-      if (suggestionClicked) {
-        setSuggestionClicked(false);
-        return;
-      }
-      if (!sessionStorage.getItem("computeFetched")) {
-        sessionStorage.setItem("computeFetched", "true");
-        fetch(
-          "https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              ulcaApiKey: "13900b794f-49de-4b42-8ee5-6e0289fe8833",
-              userID: "737078729ae04552822e4e7e3093575c",
-            },
-            body: JSON.stringify({
-              pipelineTasks: [
-                {
-                  taskType: "transliteration",
-                  config: {
-                    language: {
-                      sourceLanguage: "en",
-                      targetLanguage: "or",
-                    },
-                  },
-                },
-              ],
-              pipelineRequestConfig: {
-                pipelineId: "64392f96daac500b55c543cd",
-              },
-            }),
-          }
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            setTransliterationConfig({
-              serviceId:
-                data?.pipelineResponseConfig?.[0]?.config?.[0]?.serviceId,
-              auth: data?.pipelineInferenceAPIEndPoint?.inferenceApiKey?.value,
-            });
-          })
-          .catch((error) => {
-            console.error("Error fetching models pipeline:", error);
-          });
-      }
+  // useEffect(() => {
+  //   if (
+  //     review &&
+  //     review.length > 0 &&
+  //     !(localStorage.getItem("locale") === "en")
+  //   ) {
+  //     if (suggestionClicked) {
+  //       setSuggestionClicked(false);
+  //       return;
+  //     }
+  //     if (!sessionStorage.getItem("computeFetched")) {
+  //       sessionStorage.setItem("computeFetched", "true");
+  //       fetch(
+  //         "https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline",
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             ulcaApiKey: "13900b794f-49de-4b42-8ee5-6e0289fe8833",
+  //             userID: "737078729ae04552822e4e7e3093575c",
+  //           },
+  //           body: JSON.stringify({
+  //             pipelineTasks: [
+  //               {
+  //                 taskType: "transliteration",
+  //                 config: {
+  //                   language: {
+  //                     sourceLanguage: "en",
+  //                     targetLanguage: "or",
+  //                   },
+  //                 },
+  //               },
+  //             ],
+  //             pipelineRequestConfig: {
+  //               pipelineId: "64392f96daac500b55c543cd",
+  //             },
+  //           }),
+  //         }
+  //       )
+  //         .then((response) => response.json())
+  //         .then((data) => {
+  //           setTransliterationConfig({
+  //             serviceId:
+  //               data?.pipelineResponseConfig?.[0]?.config?.[0]?.serviceId,
+  //             auth: data?.pipelineInferenceAPIEndPoint?.inferenceApiKey?.value,
+  //           });
+  //         })
+  //         .catch((error) => {
+  //           console.error("Error fetching models pipeline:", error);
+  //         });
+  //     }
 
-      setSuggestions([]);
+  //     setSuggestions([]);
 
-      const words = review.split(" ");
-      const wordUnderCursor = words.find(
-        (word, index) =>
-          cursorPosition >= review.indexOf(word) &&
-          cursorPosition <= review.indexOf(word) + word.length
-      );
+  //     const words = review.split(" ");
+  //     const wordUnderCursor = words.find(
+  //       (word, index) =>
+  //         cursorPosition >= review.indexOf(word) &&
+  //         cursorPosition <= review.indexOf(word) + word.length
+  //     );
 
-      if (!wordUnderCursor) return;
-      fetch("https://dhruva-api.bhashini.gov.in/services/inference/pipeline", {
-        method: "POST",
-        headers: {
-          Accept: " */*",
-          "User-Agent": " Thunder Client (https://www.thunderclient.com)",
-          Authorization:
-            transliterationConfig.auth ||
-            "L6zgUQ59QzincUafIoc1pZ8m54-UfxRdDKTNb0bVUDjm6z6HbXi6Nv7zxIJ-UyQN",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          pipelineTasks: [
-            {
-              taskType: "transliteration",
-              config: {
-                language: {
-                  sourceLanguage: "en",
-                  targetLanguage: "or",
-                },
-                serviceId:
-                  transliterationConfig.serviceId ||
-                  "ai4bharat/indicxlit--cpu-fsv2",
-                isSentence: false,
-                numSuggestions: 3,
-              },
-            },
-          ],
-          inputData: {
-            input: [
-              {
-                source: wordUnderCursor,
-              },
-            ],
-          },
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setSuggestions(data?.pipelineResponse?.[0]?.output?.[0]?.target);
-        })
-        .catch((error) => {
-          console.error("Error fetching transliteration:", error);
-        });
-    } else {
-      setSuggestions([]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [review, cursorPosition]);
+  //     if (!wordUnderCursor) return;
+  //     fetch("https://dhruva-api.bhashini.gov.in/services/inference/pipeline", {
+  //       method: "POST",
+  //       headers: {
+  //         Accept: " */*",
+  //         "User-Agent": " Thunder Client (https://www.thunderclient.com)",
+  //         Authorization:
+  //           transliterationConfig.auth ||
+  //           "L6zgUQ59QzincUafIoc1pZ8m54-UfxRdDKTNb0bVUDjm6z6HbXi6Nv7zxIJ-UyQN",
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         pipelineTasks: [
+  //           {
+  //             taskType: "transliteration",
+  //             config: {
+  //               language: {
+  //                 sourceLanguage: "en",
+  //                 targetLanguage: "or",
+  //               },
+  //               serviceId:
+  //                 transliterationConfig.serviceId ||
+  //                 "ai4bharat/indicxlit--cpu-fsv2",
+  //               isSentence: false,
+  //               numSuggestions: 3,
+  //             },
+  //           },
+  //         ],
+  //         inputData: {
+  //           input: [
+  //             {
+  //               source: wordUnderCursor,
+  //             },
+  //           ],
+  //         },
+  //       }),
+  //     })
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         setSuggestions(data?.pipelineResponse?.[0]?.output?.[0]?.target);
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching transliteration:", error);
+  //       });
+  //   } else {
+  //     setSuggestions([]);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [review, cursorPosition]);
 
   const handleInputChange = (e: any) => {
     const inputValue = e.target.value;
