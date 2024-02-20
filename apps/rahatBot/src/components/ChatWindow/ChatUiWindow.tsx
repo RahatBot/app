@@ -17,6 +17,7 @@ import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 import RenderVoiceRecorder from '../recorder/RenderVoiceRecorder';
 import { IconButton } from '@chakra-ui/react';
+import { green } from '@material-ui/core/colors';
 // import NavBar from '../NavBar';
 // import { logEvent, setUserProperties } from 'firebase/analytics';
 // import { analytics } from '../../utils/firebase';
@@ -171,8 +172,14 @@ const ChatUiWindow: React.FC = () => {
         width: '100%',
         bottom: '10vh',
         top: '100px',
+       
+      //  paddingTop:'10px',
+       borderTopRightRadius:'20px',
+       borderTopLeftRadius:'20px',
+       textAlign:'center'
       }}
       >
+       
         <Chat
           // quickReplies={[
           //   {
@@ -214,6 +221,7 @@ const ChatUiWindow: React.FC = () => {
           placeholder={placeholder}
 
         />
+        
       </div>
     </>
   );

@@ -17,9 +17,9 @@
 }
 
 .title {
-  margin-top: -12px;
+  margin-top: -15px;
   font-family: 'Mulish-demi';
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   text-align: center;
   color: var(--secondarygreen);

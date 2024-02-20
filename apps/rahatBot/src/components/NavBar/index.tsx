@@ -117,7 +117,7 @@ function NavBar() {
           <div
           >
             <Image src={UPGovtLogo} alt="" width={60} height={60} />
-
+           
           </div>
           <div>
 
@@ -126,11 +126,12 @@ function NavBar() {
           </div>
 
         </div>
-        {router.pathname === '/login' && (
+       
           <div
             className={styles.title}
-            dangerouslySetInnerHTML={{ __html: t('label.title') }}></div>
-        )}
+            dangerouslySetInnerHTML={{ __html: t('label.title') }}>      
+            </div>
+      
       </div>
     );
 }

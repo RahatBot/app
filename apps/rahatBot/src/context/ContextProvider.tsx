@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import {
   FC,
   ReactElement,
@@ -7,28 +7,27 @@ import {
   useMemo,
   useState,
   useRef,
-} from 'react';
-import { AppContext } from '.';
-import _ from 'underscore';
-import { v4 as uuidv4 } from 'uuid';
-import { UserType } from '../types';
-import { IntlProvider } from 'react-intl';
-import { useLocalization } from '../hooks';
-import toast from 'react-hot-toast';
-import axios from 'axios';
-import { useCookies } from 'react-cookie';
+} from "react";
+import { AppContext } from ".";
+import _ from "underscore";
+import { v4 as uuidv4 } from "uuid";
+import { UserType } from "../types";
+import { IntlProvider } from "react-intl";
+import { useLocalization } from "../hooks";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useCookies } from "react-cookie";
 
 function loadMessages(locale: string) {
   switch (locale) {
-    case 'en':
-      return import('../../lang/en.json');
-    case 'hi':
-      return import('../../lang/hi.json');
+    case "en":
+      return import("../../lang/en.json");
+    case "hi":
+      return import("../../lang/hi.json");
     default:
-      return import('../../lang/en.json');
+      return import("../../lang/en.json");
   }
 }
-
 
 const ContextProvider: FC<{
   locale: any;
@@ -36,7 +35,6 @@ const ContextProvider: FC<{
   setLocale: any;
   children: ReactElement;
 }> = ({ locale, children, localeMsgs, setLocale }) => {
-  
   const t = useLocalization();
   const [collapsed, setCollapsed] = useState(false); // LeftSide menu bar
   const [pdfList, setPdfList] = useState<any[]>([]);
@@ -50,7 +48,7 @@ const ContextProvider: FC<{
   const [isMsgReceiving, setIsMsgReceiving] = useState(false);
   const [messages, setMessages] = useState<Array<any>>([]);
   const [conversationId, setConversationId] = useState<string | null>(
-    sessionStorage.getItem('conversationId')
+    sessionStorage.getItem("conversationId")
   );
   const [isDown, setIsDown] = useState(true);
   const [showDialerPopup, setShowDialerPopup] = useState(false);
@@ -58,10 +56,10 @@ const ContextProvider: FC<{
   const [cookie, setCookie, removeCookie] = useCookies();
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const audioRef = useRef(null);
-  const [currentPdfId, setCurrentPdfId] = useState('');
+  const [currentPdfId, setCurrentPdfId] = useState("");
   const [keyword, setKeyword] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState(
-    cookie['access_token'] && localStorage.getItem('userID')
+    cookie["access_token"] && localStorage.getItem("userID")
   );
   const [showPdf, setShowPdf] = useState(false);
   const [conversations, setConversations] = useState([]);
@@ -69,70 +67,84 @@ const ContextProvider: FC<{
   const [ttsLoader, setTtsLoader] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [clickedAudioUrl, setClickedAudioUrl] = useState<string | null>(null);
+  const [currentQuery, setCurrentQuery] = useState("");
 
-  console.log("hola:",{messages});
-
-  useEffect(()=>{
-  
-    if(localStorage.getItem('locale')){
-      const disasterString=  localStorage.getItem('locale') === 'hi' ? 'सामान्य आपदा, कोरोना वायरस, भूकंप, आग, बाढ़, गर्मी, लू लगना, आतंकवादी हमला, गरज' : 'General Disaster, Corona Virus, Earthquake, Fire, Flood, Heat, Sunstroke, Terrorist Attack, Thunder'
-      const options =[{
-        text: localStorage.getItem('locale')==='hi' ? 'आपदा चुनें' :'Select Disaster',
-        position: 'left',
-        repliedTimestamp: new Date().valueOf(),
-        exampleOptions:false,
-        "payload": {
-          "buttonChoices": disasterString.split(',').map(item=>({key:item,text:item,backmenu:false,hasFullWidth:true})), 
-          "text": "Select Disaster"
+  useEffect(() => {
+    if (localStorage.getItem("locale")) {
+      const disasterString =
+        localStorage.getItem("locale") === "hi"
+          ? "सामान्य आपदा, कोरोना वायरस, भूकंप, आग, बाढ़, गर्मी, लू लगना, आतंकवादी हमला, गरज"
+          : "General Disaster, Corona Virus, Earthquake, Fire, Flood, Heat, Sunstroke, Terrorist Attack, Thunder";
+      const options = [
+        {
+          text:
+            localStorage.getItem("locale") === "hi"
+              ? "आपदा चुनें"
+              : "Select Disaster",
+          position: "left",
+          repliedTimestamp: new Date().valueOf(),
+          exampleOptions: false,
+          payload: {
+            buttonChoices: disasterString
+              .split(",")
+              .map((item) => ({
+                key: item,
+                text: item,
+                backmenu: false,
+                hasFullWidth: true,
+              })),
+            text: "Select Disaster",
+          },
         },
-      }]
-      setMessages(options)
-    }else {
-
-    
-    const initialMsg =  [{
-  text: 'Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language',
-  position: 'left',
-  repliedTimestamp: new Date().valueOf(),
-  exampleOptions:true,
-  "payload": {
-    "buttonChoices": [
-      {
-        "key": "hi",
-        "text": "Hindi",
-        "backmenu": false
-      },
-      {
-        "key": "en",
-        "text": "English",
-        "backmenu": false
-      },
-    ],
-    "text": "Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language "
-  },
-"isIgnore": false,
-}];
-setMessages(initialMsg);}
-  },[])
+      ];
+      setMessages(options);
+    } else {
+      const initialMsg = [
+        {
+          text: "Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language",
+          position: "left",
+          repliedTimestamp: new Date().valueOf(),
+          exampleOptions: true,
+          payload: {
+            buttonChoices: [
+              {
+                key: "hi",
+                text: "Hindi",
+                backmenu: false,
+              },
+              {
+                key: "en",
+                text: "English",
+                backmenu: false,
+              },
+            ],
+            text: "Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language ",
+          },
+          isIgnore: false,
+        },
+      ];
+      setMessages(initialMsg);
+    }
+  }, []);
   async function base64WavToPlayableLink(base64Wav: string): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
         // Convert Base64 to binary
         const binaryWav = atob(base64Wav);
-  
+
         // Convert binary to ArrayBuffer
         const arrayBuffer = new ArrayBuffer(binaryWav.length);
         const view = new Uint8Array(arrayBuffer);
         for (let i = 0; i < binaryWav.length; i++) {
           view[i] = binaryWav.charCodeAt(i);
         }
-  
+
         // Create a Blob from ArrayBuffer
-        const blob = new Blob([arrayBuffer], { type: 'audio/wav' });
-  
+        const blob = new Blob([arrayBuffer], { type: "audio/wav" });
+
         // Create an object URL from Blob
         const url = URL.createObjectURL(blob);
-  
+
         resolve(url);
       } catch (error) {
         reject(error);
@@ -143,7 +155,7 @@ setMessages(initialMsg);}
   const playAudio = useMemo(() => {
     return async (url: string, content: any) => {
       if (!url) {
-        console.error('Audio URL not provided.');
+        console.error("Audio URL not provided.");
         return;
       }
       url = await base64WavToPlayableLink(url);
@@ -161,7 +173,7 @@ setMessages(initialMsg);}
               .then(() => {
                 setTtsLoader(false);
                 setAudioPlaying(true);
-                console.log('Resumed audio:', url);
+                console.log("Resumed audio:", url);
               })
               //@ts-ignore
               .catch((error) => {
@@ -169,14 +181,14 @@ setMessages(initialMsg);}
                 setTtsLoader(false);
                 setAudioElement(null);
                 setClickedAudioUrl(null);
-                console.error('Error resuming audio:', error);
+                console.error("Error resuming audio:", error);
               });
           } else {
             // Pause the current audio if it's playing
             //@ts-ignore
             audioElement.pause();
             setAudioPlaying(false);
-            console.log('Paused audio:', url);
+            console.log("Paused audio:", url);
           }
           return;
         } else {
@@ -190,7 +202,7 @@ setMessages(initialMsg);}
       setTtsLoader(true);
       const audio = new Audio(url);
       audio.playbackRate = 1.15;
-      audio.addEventListener('ended', () => {
+      audio.addEventListener("ended", () => {
         setAudioElement(null);
         setAudioPlaying(false);
       });
@@ -207,7 +219,7 @@ setMessages(initialMsg);}
         .then(() => {
           setTtsLoader(false);
           setAudioPlaying(true);
-          console.log('Audio played:', url);
+          console.log("Audio played:", url);
           // Update the current audio to the new audio element
           //@ts-ignore
           setAudioElement(audio);
@@ -217,7 +229,7 @@ setMessages(initialMsg);}
           setTtsLoader(false);
           setAudioElement(null);
           setClickedAudioUrl(null);
-          console.error('Error playing audio:', error);
+          console.error("Error playing audio:", error);
         });
     };
   }, [audioElement]);
@@ -230,20 +242,25 @@ setMessages(initialMsg);}
     }: {
       user: { name: string; id: string };
       msg: {
-        content: { title: string; choices: any, audio_url: string, flowEnd: string };
+        content: {
+          title: string;
+          choices: any;
+          audio_url: string;
+          flowEnd: string;
+        };
         messageId: string;
       };
       media: any;
     }) => {
-      console.log('hie', msg);
-      if (msg.content.title !== '') {
+      console.log("hie", msg);
+      if (msg.content.title !== "") {
         const newMsg = {
           username: user?.name,
           text: msg.content.title,
           choices: msg.content.choices,
           audio_url: msg.content.audio_url,
           flowEnd: msg.content.flowEnd,
-          position: 'left',
+          position: "left",
           id: user?.id,
           botUuid: user?.id,
           reaction: 0,
@@ -254,10 +271,10 @@ setMessages(initialMsg);}
           ...media,
         };
 
-        console.log('here', msg, conversationId);
+        console.log("here", msg, conversationId);
         //@ts-ignore
         if (conversationId === msg?.content?.conversationId) {
-          console.log('here', newMsg);
+          console.log("here", newMsg);
           setMessages((prev: any) => [...prev, newMsg]);
         }
       }
@@ -265,18 +282,18 @@ setMessages(initialMsg);}
     [conversationId]
   );
 
-  console.log('erty:', { conversationId });
+  console.log("erty:", { conversationId });
 
   const getConversations = useCallback(() => {
-    if (!cookie['access_token']) return;
+    if (!cookie["access_token"]) return;
     axios
       .get(`${process.env.NEXT_PUBLIC_BASE_URL}/user/conversations`, {
         headers: {
-          Authorization: `Bearer ${cookie['access_token']}`,
+          Authorization: `Bearer ${cookie["access_token"]}`,
         },
       })
       .then((res) => {
-        console.log('history', res.data);
+        console.log("history", res.data);
         const sortedConversations = [...res.data].sort((a, b) => {
           const dateA = new Date(a.updatedAt);
           const dateB = new Date(b.updatedAt);
@@ -289,7 +306,7 @@ setMessages(initialMsg);}
       })
       .catch((err) => {
         console.log(err);
-        toast.error('Could not load your chat history!');
+        toast.error("Could not load your chat history!");
       });
   }, [cookie]);
 
@@ -299,41 +316,41 @@ setMessages(initialMsg);}
 
   const onMessageReceived = useCallback(
     async (msg: any) => {
-      console.log('mssgs:', messages);
-      console.log('#-debug:', { msg });
+      console.log("mssgs:", messages);
+      console.log("#-debug:", { msg });
       setLoading(false);
       setIsMsgReceiving(false);
       //@ts-ignore
-      const user = JSON.parse(localStorage.getItem('currentUser'));
+      const user = JSON.parse(localStorage.getItem("currentUser"));
 
-      if (msg.content.msg_type.toUpperCase() === 'IMAGE') {
+      if (msg.content.msg_type.toUpperCase() === "IMAGE") {
         updateMsgState({
           user,
           msg,
           media: { imageUrl: msg?.content?.media_url },
         });
-      } else if (msg.content.msg_type.toUpperCase() === 'AUDIO') {
+      } else if (msg.content.msg_type.toUpperCase() === "AUDIO") {
         updateMsgState({
           user,
           msg,
           media: { audioUrl: msg?.content?.media_url },
         });
-      } else if (msg.content.msg_type.toUpperCase() === 'VIDEO') {
+      } else if (msg.content.msg_type.toUpperCase() === "VIDEO") {
         updateMsgState({
           user,
           msg,
           media: { videoUrl: msg?.content?.media_url },
         });
       } else if (
-        msg.content.msg_type.toUpperCase() === 'DOCUMENT' ||
-        msg.content.msg_type.toUpperCase() === 'FILE'
+        msg.content.msg_type.toUpperCase() === "DOCUMENT" ||
+        msg.content.msg_type.toUpperCase() === "FILE"
       ) {
         updateMsgState({
           user,
           msg,
           media: { fileUrl: msg?.content?.media_url },
         });
-      } else if (msg.content.msg_type.toUpperCase() === 'TEXT') {
+      } else if (msg.content.msg_type.toUpperCase() === "TEXT") {
         updateMsgState({ user, msg, media: {} });
       }
     },
@@ -363,10 +380,10 @@ setMessages(initialMsg);}
 
       //  console.log('mssgs:',messages)
       if (media) {
-        if (media.mimeType.slice(0, 5) === 'image') {
-        } else if (media.mimeType.slice(0, 5) === 'audio') {
-        } else if (media.mimeType.slice(0, 5) === 'video') {
-        } else if (media.mimeType.slice(0, 11) === 'application') {
+        if (media.mimeType.slice(0, 5) === "image") {
+        } else if (media.mimeType.slice(0, 5) === "audio") {
+        } else if (media.mimeType.slice(0, 5) === "video") {
+        } else if (media.mimeType.slice(0, 11) === "application") {
         } else {
         }
       } else {
@@ -376,9 +393,9 @@ setMessages(initialMsg);}
         setMessages((prev: any) => [
           ...prev.map((prevMsg: any) => ({ ...prevMsg })),
           {
-            username: localStorage.getItem('userID'),
+            username: localStorage.getItem("userID"),
             text: text,
-            position: 'right',
+            position: "right",
             botUuid: currentUser?.id,
             payload: { text },
             time: Date.now(),
@@ -395,10 +412,10 @@ setMessages(initialMsg);}
         //   // mobileNumber: localStorage.getItem('phoneNumber'),
         // };
         const data = {
-          "text": text,
-          "media": "",
-          "inputLangugae": locale || 'en'
-        }
+          text: text,
+          media: "",
+          inputLangugae: locale || "en",
+        };
 
         try {
           const response = await axios.post(
@@ -406,22 +423,22 @@ setMessages(initialMsg);}
             data,
             {
               headers: {
-                'Content-Type': 'application/json',
-                "user-id": localStorage.getItem('userID'),
+                "Content-Type": "application/json",
+                "user-id": localStorage.getItem("userID"),
               },
             }
           );
 
           // Handle response here
-          console.log('hie', response?.data);
+          console.log("hie", response?.data);
           onMessageReceived({
             content: {
               title: response?.data?.text || response?.data?.error,
-              msg_type: 'TEXT',
+              msg_type: "TEXT",
               choices: null,
-              conversationId: sessionStorage.getItem('conversationId'),
-              audio_url: response?.data?.audio?.text || '',
-              flowEnd: response?.data?.flowEnd
+              conversationId: sessionStorage.getItem("conversationId"),
+              audio_url: response?.data?.audio?.text || "",
+              flowEnd: response?.data?.flowEnd,
             },
             messageId: response?.data?.messageId,
           });
@@ -429,11 +446,11 @@ setMessages(initialMsg);}
           // Handle error here
           onMessageReceived({
             content: {
-              title: 'Something went wrong. Please try again later.',
-              msg_type: 'TEXT',
+              title: "Something went wrong. Please try again later.",
+              msg_type: "TEXT",
               choices: null,
-              conversationId: sessionStorage.getItem('conversationId'),
-              audio_url: ''
+              conversationId: sessionStorage.getItem("conversationId"),
+              audio_url: "",
             },
             messageId: msgId,
           });
@@ -452,12 +469,12 @@ setMessages(initialMsg);}
         `${process.env.NEXT_PUBLIC_BASE_URL}/health/20`
       );
       const status = res.data.status;
-      console.log('hie', status);
-      if (status === 'OK') {
+      console.log("hie", status);
+      if (status === "OK") {
         setIsDown(false);
       } else {
         setIsDown(true);
-        console.log('Server status is not OK');
+        console.log("Server status is not OK");
       }
     } catch (error) {
       console.error(error);
@@ -469,10 +486,10 @@ setMessages(initialMsg);}
     let secondTimer: any;
     const timer = setTimeout(() => {
       if (isMsgReceiving && loading) {
-        toast.error(`${t('message.taking_longer')}`);
+        toast.error(`${t("message.taking_longer")}`);
         secondTimer = setTimeout(() => {
           if (isMsgReceiving && loading) {
-            toast.error(`${t('message.retry')}`);
+            toast.error(`${t("message.retry")}`);
             setIsMsgReceiving(false);
             setLoading(false);
             fetchIsDown();
@@ -537,9 +554,13 @@ setMessages(initialMsg);}
       playAudio,
       ttsLoader,
       clickedAudioUrl,
-      audioPlaying
+      audioPlaying,
+      currentQuery,
+      setCurrentQuery,
     }),
     [
+      currentQuery,
+      setCurrentQuery,
       locale,
       setLocale,
       localeMsgs,
@@ -587,7 +608,7 @@ setMessages(initialMsg);}
       playAudio,
       ttsLoader,
       clickedAudioUrl,
-      audioPlaying
+      audioPlaying,
     ]
   );
 
@@ -602,12 +623,12 @@ setMessages(initialMsg);}
 };
 
 const SSR: FC<{ children: ReactElement }> = ({ children }) => {
-  const [locale, setLocale] = useState('');
+  const [locale, setLocale] = useState("");
   const [localeMsgs, setLocaleMsgs] = useState<Record<string, string> | null>(
     null
   );
   useEffect(() => {
-    setLocale(localStorage.getItem('locale') || 'en');
+    setLocale(localStorage.getItem("locale") || "en");
   }, []);
 
   useEffect(() => {
@@ -617,14 +638,15 @@ const SSR: FC<{ children: ReactElement }> = ({ children }) => {
     });
   }, [locale]);
 
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   return (
     //@ts-ignore
     <IntlProvider locale={locale} messages={localeMsgs}>
       <ContextProvider
         locale={locale}
         setLocale={setLocale}
-        localeMsgs={localeMsgs}>
+        localeMsgs={localeMsgs}
+      >
         {children}
       </ContextProvider>
     </IntlProvider>
