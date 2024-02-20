@@ -87,7 +87,8 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
       ];
       context?.setMessages((prev: any) => [...prev, ...options]);
     },
-    [context]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [context?.setMessages]
   );
 
   const onLikeDislike = useCallback(
@@ -446,7 +447,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
           <div style={{ display: "flex" }}>
             <span
               style={{ fontSize: "16px" }}
-              dangerouslySetInnerHTML={{ __html: `${content.text}` }}
+              dangerouslySetInnerHTML={{ __html: `${content?.text}` }}
             ></span>
           </div>
           <div style={{ marginTop: "10px" }} />
@@ -587,24 +588,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
         </>
       );
     }
-    case "options": {
-      return (
-        <>
-          <Bubble type="text" className={styles.textBubble}>
-            <div style={{ display: "flex" }}>
-              <span className={styles.optionsText}>
-                {content?.data?.payload?.text}
-              </span>
-            </div>
-            {getLists({
-              choices:
-                content?.data?.payload?.buttonChoices ?? content?.data?.choices,
-              isDisabled: false,
-            })}
-          </Bubble>
-        </>
-      );
-    }
+   
     default:
       return (
         <ScrollView

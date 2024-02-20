@@ -1,0 +1,71 @@
+.Composer {
+  display: flex;
+  align-items: flex-end;
+  padding: @composer-padding;
+
+  > div + div {
+    margin-left: 9px;
+  }
+}
+
+.Composer-actions {
+  display: flex;
+  align-items: center;
+  height: @composer-input-min-height;
+
+  .IconBtn {
+    font-size: 30px;
+    color: var(--gray-1);
+  }
+}
+
+.Composer-toggleBtn {
+  transition: transform 0.2s;
+
+  &.active .Icon {
+    transform: rotate(45deg);
+  }
+}
+
+.Composer-inputWrap {
+  flex: 1;
+  position: relative;
+}
+
+.Composer-input {
+  overflow: hidden;
+  max-height: @composer-input-max-height;
+  padding: @composer-input-padding;
+  border: @composer-input-border;
+  border-radius: @composer-input-border-radius;
+  background: @composer-input-bg;
+  line-height: 20px;
+  font-size: 16px;
+  caret-color: @composer-input-caret-color;
+  transition: @composer-input-transition;
+}
+
+.Composer-sendBtn {
+  min-width: 0;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+// .tooltip-container {
+//   position: relative;
+//   display: inline-block;
+// }
+
+.tooltip-content {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: black;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 1; /* Ensure the tooltip is above other content */
+  opacity: 0.75;
+}
