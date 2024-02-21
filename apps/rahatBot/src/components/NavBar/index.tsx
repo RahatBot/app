@@ -1,4 +1,4 @@
-import { useContext, useCallback } from 'react';
+import { useContext, useCallback, useEffect } from 'react';
 import styles from './index.module.css';
 import YogiModiImg from '../../assets/images/yogimodi.png';
 import UPGovtLogo from '../../assets/images/up-govt-logo.png';
@@ -21,12 +21,16 @@ function NavBar() {
   const t = useLocalization();
   const context = useContext(AppContext);
   const [cookie, setCookies] = useCookies();
-  const defaultLang = flagsmith.getValue('default_lang', { fallback: 'hi' });
+
   const [isEngActive, setIsEngActive] = React.useState(
     localStorage.getItem('locale')
       ? localStorage.getItem('locale') === 'en'
-      : defaultLang === 'en'
+      : 'en'
   );
+
+  useEffect(()=>{
+    setIsEngActive(context?.locale==='en')
+  },[context?.locale])
 
   const toggleLanguage = React.useCallback(
     (newLanguage: string) => () => {
