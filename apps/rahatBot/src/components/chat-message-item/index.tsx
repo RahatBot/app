@@ -64,8 +64,8 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
     (lang: string) => {
       const disasterString =
         lang === "hi"
-          ? "सामान्य आपदा, कोरोना वायरस, भूकंप, बाढ़, गर्मी, लू लगना, आतंकवादी हमला, गरज"
-          : "General Disaster, Corona Virus, Earthquake, Flood, Heat, Sunstroke, Terrorist Attack, Thunder";
+          ? "सामान्य आपदा, कोरोना वायरस, भूकंप, बाढ़, आग, लू, आतंकी हमला, गड़गड़ाहट"
+          : "General Disaster, Corona Virus, Earthquake, Flood, Fire, Sunstroke, Terrorist Attack, Thunder";
       const options = [
         {
         //  text: lang === "hi" ? "आपदा चुनें" : "Select Disaster",
