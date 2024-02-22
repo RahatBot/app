@@ -55,7 +55,7 @@
   outline: 1px solid var(--secondarygreen);
 }
 
-.dialerBox button {
+.dialerBox button:first-child {
   font-weight: 700 ;
   font-size: 14px;
   color: white ;
@@ -65,6 +65,19 @@
   border: none ;
   border-radius: 40px !important;
   background-color: #1E6231 !important;
+  margin-right: 5px;
+}
+
+.dialerBox button:nth-child(2) {
+  font-weight: 700 ;
+  font-size: 14px;
+  color: white ;
+  margin: 1vh auto 0 auto;
+  font-family: 'Mulish-regular';
+  padding: 10px ;
+  border: none ;
+  border-radius: 40px !important;
+  background-color: #d0241e !important;
 }
 
 .crossIconBox {

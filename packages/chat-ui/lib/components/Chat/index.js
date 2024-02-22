@@ -61,6 +61,7 @@ var Chat = exports.Chat = /*#__PURE__*/_react.default.forwardRef(function (props
     onAccessoryToggle = props.onAccessoryToggle,
     rightAction = props.rightAction,
     LeftAction = props.LeftAction,
+    refreshLabel = props.refreshLabel,
     _props$Composer = props.Composer,
     Composer = _props$Composer === void 0 ? _Composer.Composer : _props$Composer;
   function handleInputFocus(e) {
@@ -137,6 +138,7 @@ var Chat = exports.Chat = /*#__PURE__*/_react.default.forwardRef(function (props
     btnColor: btnColor,
     onImageSend: onImageSend,
     rightAction: rightAction,
-    LeftAction: LeftAction
+    LeftAction: LeftAction,
+    refreshLabel: refreshLabel
   }))));
 });

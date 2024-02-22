@@ -191,6 +191,7 @@ export const Chat = React.forwardRef<HTMLDivElement, ChatProps>((props, ref) => 
     onAccessoryToggle,
     rightAction,
     LeftAction,
+    refreshLabel,
     Composer = DComposer,
   } = props;
 
@@ -267,6 +268,7 @@ export const Chat = React.forwardRef<HTMLDivElement, ChatProps>((props, ref) => 
             onImageSend={onImageSend}
             rightAction={rightAction}
             LeftAction={LeftAction}
+            refreshLabel={refreshLabel}
           />
         </div>
       </div>

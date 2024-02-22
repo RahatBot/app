@@ -68,19 +68,16 @@ const ContextProvider: FC<{
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [clickedAudioUrl, setClickedAudioUrl] = useState<string | null>(null);
   const [currentQuery, setCurrentQuery] = useState("");
-
+const [activeAudioId, setActiveAudioId] = useState(null)
+  
   useEffect(() => {
     if (localStorage.getItem("locale")) {
       const disasterString =
         localStorage.getItem("locale") === "hi"
         ? "सामान्य आपदा,कोरोना वायरस,भूकंप,बाढ़,आग,लू,आतंकी हमला,गड़गड़ाहट"
-        : "General Disaster,Corona Virus,Earthquake,Flood,Fire,Sunstroke,Terrorist Attack,Thunder";
+        : "General Disaster,Coronavirus,Earthquake,Flood,Fire,Sunstroke,Terrorist Attack,Thunder";
       const options = [
         {
-          // text:
-          //   localStorage.getItem("locale") === "hi"
-          //     ? "आपदा चुनें"
-          //     : "Select Disaster",
           text: t('label.disasterList'),
           position: "left",
           repliedTimestamp: new Date().valueOf(),
@@ -110,7 +107,7 @@ const ContextProvider: FC<{
             buttonChoices: [
               {
                 key: "hi",
-                text: "Hindi",
+                text: "हिंदी",
                 backmenu: false,
               },
               {
@@ -153,19 +150,123 @@ const ContextProvider: FC<{
     });
   }
 
-  const playAudio = useMemo(() => {
-    return async (url: string, content: any) => {
+  // const playAudio = useCallback(async (url: string, content: any) => {
+    
+    
+  //     if (!url) {
+  //       console.error('Audio URL not provided.');
+  //       return;
+  //     }
+  //     url = await base64WavToPlayableLink(url);
+  //     if (audioElement && url) {
+  //       //@ts-ignore
+  //       if (true) {
+  //         // If the same URL is provided and audio is paused, resume playback
+  //         //@ts-ignore
+  //         if (audioElement.paused) {
+  //           setClickedAudioUrl(url);
+  //           // setTtsLoader(true);
+  //           audioElement
+  //             //@ts-ignore
+  //             .play()
+  //             .then(() => {
+  //               // setTtsLoader(false);
+  //               setAudioPlaying(true);
+  //               console.log('Resumed audio:', url);
+  //             })
+  //             //@ts-ignore
+  //             .catch((error) => {
+  //               setAudioPlaying(false);
+  //               // setTtsLoader(false);
+  //               setAudioElement(null);
+  //               setClickedAudioUrl(null);
+  //               console.error('Error resuming audio:', error);
+  //             });
+  //         } else {
+  //           // Pause the current audio if it's playing
+  //           //@ts-ignore
+  //           audioElement.pause();
+  //           setAudioPlaying(false);
+  //           console.log('Paused audio:', url);
+  //         }
+  //         return;
+  //       } else {
+  //         // Pause the older audio if it's playing
+  //         //@ts-ignore
+  //         audioElement.pause();
+  //         setAudioPlaying(false);
+  //       }
+  //     }
+  //     setClickedAudioUrl(url);
+  //     // setTtsLoader(true);
+  //     const audio = new Audio(url);
+  //     audio.playbackRate = 1;
+  //     audio.addEventListener('ended', () => {
+  //       setAudioElement(null);
+  //       setAudioPlaying(false);
+  //     });
+  //     axios
+  //       .get(
+  //         `${process.env.NEXT_PUBLIC_BASE_URL}/incrementaudioused/${content?.data?.messageId}`
+  //       )
+  //       .then((res) => { })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //     audio
+  //       .play()
+  //       .then(() => {
+  //         // setTtsLoader(false);
+  //         setAudioPlaying(true);
+  //         console.log('Audio played:', url);
+  //         // Update the current audio to the new audio element
+  //         //@ts-ignore
+  //         setAudioElement(audio);
+  //       })
+  //       .catch((error) => {
+  //         setAudioPlaying(false);
+  //         // setTtsLoader(false);
+  //         setAudioElement(null);
+  //         setClickedAudioUrl(null);
+  //         console.error('Error playing audio:', error);
+  //       });
+    
+  // }, [audioElement]);
+
+  const playAudio = useCallback(async(url: string, content: any) => {
+    console.log("holai:",{content,url})
       if (!url) {
         console.error("Audio URL not provided.");
+        console.log("holai 1");
         return;
       }
-      url = await base64WavToPlayableLink(url);
+    url = await base64WavToPlayableLink(url);
+    console.log("holai:",{url,audioElement})
       if (audioElement) {
+        console.log("holai 2",{audioElement});
+       
+        //@ts-ignore
+        if(audioElement.paused){
+          //@ts-ignore
+         audioElement.play();
+         setAudioPlaying(true);
+         return;
+       }
+        //@ts-ignore
+        if(!audioElement.ended){
+          //@ts-ignore
+         audioElement.pause();
+         setAudioElement(null)
+         setAudioPlaying(false);
+         return;
+       }
         //@ts-ignore
         if (audioElement.src === url) {
+
           // If the same URL is provided and audio is paused, resume playback
           //@ts-ignore
           if (audioElement.paused) {
+            console.log("holai 4");
             setClickedAudioUrl(url);
             setTtsLoader(true);
             audioElement
@@ -185,6 +286,7 @@ const ContextProvider: FC<{
                 console.error("Error resuming audio:", error);
               });
           } else {
+  
             // Pause the current audio if it's playing
             //@ts-ignore
             audioElement.pause();
@@ -193,12 +295,19 @@ const ContextProvider: FC<{
           }
           return;
         } else {
+         
           // Pause the older audio if it's playing
           //@ts-ignore
           audioElement.pause();
-          setAudioPlaying(false);
+          if(isAudioPlaying){
+            setAudioPlaying(false);
+            return
+          }
+          
+          
         }
       }
+   
       setClickedAudioUrl(url);
       setTtsLoader(true);
       const audio = new Audio(url);
@@ -207,17 +316,12 @@ const ContextProvider: FC<{
         setAudioElement(null);
         setAudioPlaying(false);
       });
-      // axios
-      //   .get(
-      //     `${process.env.NEXT_PUBLIC_BASE_URL}/incrementaudioused/${content?.data?.messageId}`
-      //   )
-      //   .then((res) => {})
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
+      
+     
       audio
         .play()
         .then(() => {
+          console.log("holai 8")
           setTtsLoader(false);
           setAudioPlaying(true);
           console.log("Audio played:", url);
@@ -232,8 +336,8 @@ const ContextProvider: FC<{
           setClickedAudioUrl(null);
           console.error("Error playing audio:", error);
         });
-    };
-  }, [audioElement]);
+    
+  }, [audioElement, isAudioPlaying]);
 
   const updateMsgState = useCallback(
     ({
@@ -558,9 +662,9 @@ const ContextProvider: FC<{
       clickedAudioUrl,
       audioPlaying,
       currentQuery,
-      setCurrentQuery,
+      setCurrentQuery,activeAudioId, setActiveAudioId
     }),
-    [
+    [activeAudioId, setActiveAudioId,
       currentQuery,
       setCurrentQuery,
       locale,

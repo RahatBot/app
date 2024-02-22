@@ -25,7 +25,7 @@ import Image from "next/image";
 import styles from "./index.module.css";
 import RightIcon from "../../assets/icons/right.jsx";
 import SpeakerIcon from "../../assets/icons/speaker.svg";
-import SpeakerPauseIcon from "../../assets/icons/speakerPause.svg";
+import SpeakerPauseIcon from "../../assets/icons/speakerPause.png";
 import reloadIcon from "../../assets/icons/reload.svg";
 import CopyText from "../../assets/icons/copy-text.svg";
 import MsgThumbsUp from "../../assets/icons/msg-thumbs-up.jsx";
@@ -268,36 +268,43 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
   // };
 
   const newChatHandler = () => {
-    if (context?.loading) {
-      toast.error("Please wait for a response!");
-      return;
-    }
-    context?.setMessages([]);
-    const newConversationId = uuidv4();
-    const newUserId = uuidv4();
-    localStorage.setItem("userID", newUserId);
-    sessionStorage.setItem("conversationId", newConversationId);
-    context?.setConversationId(newConversationId);
-    toast.success("New chat started!");
+    showDisasterOptions(context?.locale)
+    // if (context?.loading) {
+    //   toast.error("Please wait for a response!");
+    //   return;
+    // }
+    // context?.setMessages([]);
+    // const newConversationId = uuidv4();
+    // const newUserId = uuidv4();
+    // localStorage.setItem("userID", newUserId);
+    // sessionStorage.setItem("conversationId", newConversationId);
+    // context?.setConversationId(newConversationId);
+    // toast.success("New chat started!");
   };
 
   const { content, type } = message;
   console.log({ content });
-  const handleAudio = (url: any) => {
+
+  const handleAudio = (url: any,id:string) => {
     // console.log(url)
     if (!url) {
       toast.error("No audio");
       return;
     }
-    context?.playAudio(url, content);
+   context?.setActiveAudioId(id)
+   setTimeout(()=>{ context?.playAudio(url, content);},10)
+    
+    
   };
+
+ 
   // const sanitizedText = content?.text?.replace(/\n/g, '\n ');
 
   // const formattedContent = sanitizedText ? sanitizedText
   //   ?.split(' ')
   //   ?.map((word: any, index: number) => addMarkup(word))
   //   ?.join(' ') : 'Something went wrong. Please try later.';
-
+console.log("shriram:",{rr:content?.text})
   switch (type) {
     case "loader":
       return <Typing />;
@@ -317,7 +324,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                 ? styles.messageTriangleRight
                 : styles.messageTriangleLeft
             }></div> */}
-          <Bubble type="text">
+          <Bubble type="text" style={{textAlign:'left'}}>
             <span
               className={styles.onHover}
               style={{
@@ -330,9 +337,10 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
               <Markdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
+                className="text-right"
                 components={{
                   li: ({ children }) => (
-                    <li style={{ marginLeft: "20px" }}>{children}</li>
+                    <li style={{ marginLeft: "20px" ,textAlign:'right'}}>dd{children}</li>
                   ),
                   a: ({ node, ...props }) => (
                     <a
@@ -348,7 +356,10 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                   ),
                 }}
               >
-                {content?.text}
+           
+           {content?.text}
+             
+          
               </Markdown>
               {/* <RichText content={formatText(formattedContent)} /> */}
             </span>
@@ -417,15 +428,17 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
               </div>
               <div
                 className={styles.msgSpeaker}
-                onClick={() => handleAudio(content?.data?.audio_url || "")}
+                onClick={() => handleAudio(content?.data?.audio_url || "",content?.data?.messageId)}
               >
+               
                 {context?.clickedAudioUrl === content?.data?.audio_url ? (
                   context?.ttsLoader ? (
                     <Loader />
                   ) : (
                     <Image
                       src={
-                        !context?.audioPlaying ? SpeakerIcon : SpeakerPauseIcon
+                        // !context?.audioPlaying ? SpeakerIcon : SpeakerPauseIcon
+                        context?.audioPlaying ?  SpeakerPauseIcon : SpeakerIcon 
                       }
                       width={!context?.audioPlaying ? 15 : 40}
                       height={!context?.audioPlaying ? 15 : 30}
@@ -433,7 +446,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                     />
                   )
                 ) : (
-                  <Image src={SpeakerIcon} width={15} height={15} alt="" />
+                  <Image src={context?.activeAudioId === content?.data?.messageId && context?.audioPlaying ?    SpeakerPauseIcon : SpeakerIcon } width={15} height={15} alt="" />
                 )}
               </div>
             </div>

@@ -144,6 +144,7 @@ const ChatUiWindow: React.FC = () => {
   console.log('debug:', { msgToRender });
 
   const placeholder = useMemo(() => t('message.ask_ur_question'), [t]);
+  const refreshLabel = useMemo(() => t('message.refresh_label'), [t]);
 
   const quickReplyClickHandler = (e: any) => {
     if (context?.loading) {
@@ -217,7 +218,7 @@ const ChatUiWindow: React.FC = () => {
           onSend={handleSend}
           locale="en-US"
           placeholder={placeholder}
-
+          refreshLabel={refreshLabel}
         />
         
       </div>

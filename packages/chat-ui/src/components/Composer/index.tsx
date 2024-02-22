@@ -40,6 +40,7 @@ export type ComposerProps = {
   btnColor:string;
   voiceToText?:any;
   voiceToTextProps?:any;
+  refreshLabel?:string;
 };
 
 export interface ComposerHandle {
@@ -70,6 +71,7 @@ export const Composer = React.forwardRef<ComposerHandle, ComposerProps>((props, 
    // LeftAction,
     inputOptions,
     btnColor,
+    refreshLabel
   } = props;
 
   
@@ -296,13 +298,13 @@ export const Composer = React.forwardRef<ComposerHandle, ComposerProps>((props, 
       </div>
     );
   }
-
+console.log("holai",{refreshLabel})
  
   return (
     <>
    
       <div className="Composer">
-        {<LeftAction /> }
+        {<LeftAction refreshLabel={refreshLabel}/> }
          
         {recorder.canRecord && (
           <Action

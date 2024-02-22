@@ -7,9 +7,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _Tooltip = _interopRequireDefault(require("./Tooltip"));
-var LeftAction = function LeftAction() {
+var LeftAction = function LeftAction(_ref) {
+  var refreshLabel = _ref.refreshLabel;
+  console.log("holai:", {
+    refreshLabel: refreshLabel
+  });
   var onRefresh = function onRefresh() {
-    if (window.confirm("आप इस पृष्ठ को ताज़ा करने वाले हैं और अपना सभी मौजूदा सत्र इतिहास खोने वाले हैं। क्या आप पृष्ठ को जारी रखना और ताज़ा करना चाहते हैं?")) {
+    if (window.confirm("".concat(refreshLabel))) {
       window.location.reload();
     }
   };
@@ -18,7 +22,7 @@ var LeftAction = function LeftAction() {
     language: language
   });
   return /*#__PURE__*/_react.default.createElement(_Tooltip.default, {
-    content: 'मौजूदा चैट को हटाने और नई चैट शुरू करने के लिए रिफ्रेश पर क्लिक करें'
+    content: refreshLabel
   }, /*#__PURE__*/_react.default.createElement("button", {
     onClick: onRefresh,
     style: {

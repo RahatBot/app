@@ -41,11 +41,6 @@ const DialerPopup: React.FC<any> = ({ setShowDialerPopup }) => {
           {
             feedback,
           },
-          // {
-          //   headers: {
-          //     authorization: `Bearer ${localStorage.getItem("auth")}`,
-          //   },
-          // }
         )
         .then((response) => {
           toast.success(reviewSubmitted);
@@ -69,49 +64,49 @@ const DialerPopup: React.FC<any> = ({ setShowDialerPopup }) => {
     setActiveSuggestion(index);
   };
 
-  const suggestionClickHandler = useCallback(
-    (e: any) => {
-      const words = review.split(" ");
+  // const suggestionClickHandler = useCallback(
+  //   (e: any) => {
+  //     const words = review.split(" ");
 
-      // Find the word at the cursor position
-      //@ts-ignore
-      const cursorPosition = inputRef.current.selectionStart;
-      let currentIndex = 0;
-      let selectedWord = "";
+  //     // Find the word at the cursor position
+  //     //@ts-ignore
+  //     const cursorPosition = inputRef.current.selectionStart;
+  //     let currentIndex = 0;
+  //     let selectedWord = "";
 
-      // console.log(cursorPosition, inputMsg.length);
+  //     // console.log(cursorPosition, inputMsg.length);
 
-      for (let i = 0; i < words.length; i++) {
-        const word = words[i];
-        if (
-          currentIndex <= cursorPosition &&
-          cursorPosition <= currentIndex + word.length
-        ) {
-          selectedWord = word;
-          break;
-        }
-        currentIndex += word.length + 1; // +1 to account for the space between words
-      }
+  //     for (let i = 0; i < words.length; i++) {
+  //       const word = words[i];
+  //       if (
+  //         currentIndex <= cursorPosition &&
+  //         cursorPosition <= currentIndex + word.length
+  //       ) {
+  //         selectedWord = word;
+  //         break;
+  //       }
+  //       currentIndex += word.length + 1; // +1 to account for the space between words
+  //     }
 
-      // Replace the selected word with the transliterated suggestion
-      if (selectedWord !== "") {
-        const newInputMsg = review.replace(
-          selectedWord,
-          cursorPosition === review.length ? e + " " : e
-        );
+  //     // Replace the selected word with the transliterated suggestion
+  //     if (selectedWord !== "") {
+  //       const newInputMsg = review.replace(
+  //         selectedWord,
+  //         cursorPosition === review.length ? e + " " : e
+  //       );
 
-        setSuggestions([]);
-        setSuggestionClicked(true);
-        setActiveSuggestion(0);
+  //       setSuggestions([]);
+  //       setSuggestionClicked(true);
+  //       setActiveSuggestion(0);
 
-        setReview(newInputMsg);
+  //       setReview(newInputMsg);
 
-        //@ts-ignore
-        inputRef.current && inputRef.current.focus();
-      }
-    },
-    [review]
-  );
+  //       //@ts-ignore
+  //       inputRef.current && inputRef.current.focus();
+  //     }
+  //   },
+  //   [review]
+  // );
 
   // const handleKeyDown = useCallback(
   //   (e: KeyboardEvent) => {
@@ -301,7 +296,7 @@ const DialerPopup: React.FC<any> = ({ setShowDialerPopup }) => {
       </div>
       <p>{t("label.comment")}</p>
       <div className={styles.dialerBox}>
-        <div className={styles.suggestions}>
+        {/* <div className={styles.suggestions}>
           {suggestions.map((elem, index) => {
             return (
               <div
@@ -316,7 +311,7 @@ const DialerPopup: React.FC<any> = ({ setShowDialerPopup }) => {
               </div>
             );
           })}
-        </div>
+        </div> */}
         <textarea
           ref={inputRef}
           value={review}
@@ -327,10 +322,14 @@ const DialerPopup: React.FC<any> = ({ setShowDialerPopup }) => {
           rows={5}
           placeholder={t("message.comment_description")}
         ></textarea>
-
+<div>
         <button onClick={() => submitReview(review)}>
           {t("label.submit_feedback")}
         </button>
+        <button  onClick={() => submitReview('')}>
+          {t("label.skip")}
+        </button>
+        </div>
       </div>
     </div>
   );

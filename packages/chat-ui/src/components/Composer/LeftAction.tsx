@@ -1,16 +1,17 @@
-import React from 'react'
+import React,{FC} from 'react'
 import Tooltip from './Tooltip'
 
-const LeftAction = () => {
+const LeftAction:FC<{refreshLabel?:string}> = ({refreshLabel}) => {
+  console.log("holai:",{refreshLabel})
     const onRefresh=()=>{
-        if(window.confirm("आप इस पृष्ठ को ताज़ा करने वाले हैं और अपना सभी मौजूदा सत्र इतिहास खोने वाले हैं। क्या आप पृष्ठ को जारी रखना और ताज़ा करना चाहते हैं?")){
+        if(window.confirm(`${refreshLabel}`)){
           window.location.reload()
         }
       }
       const language = localStorage.getItem('locale');
       console.log({language})
   return (
-    <Tooltip content={'मौजूदा चैट को हटाने और नई चैट शुरू करने के लिए रिफ्रेश पर क्लिक करें'}>
+    <Tooltip content={refreshLabel}>
     <button onClick={onRefresh} style={{border:'2px solid #b99825',background:'none',borderRadius:'50%' ,height:'45px',width:'45px' ,padding:'5px',marginRight:'5px'}}>
         <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#b99825">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>

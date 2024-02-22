@@ -43,7 +43,8 @@ export var Composer = /*#__PURE__*/React.forwardRef(function (props, ref) {
     onToolbarClick = props.onToolbarClick,
     rightAction = props.rightAction,
     inputOptions = props.inputOptions,
-    btnColor = props.btnColor;
+    btnColor = props.btnColor,
+    refreshLabel = props.refreshLabel;
   var _useState = useState(initialText),
     _useState2 = _slicedToArray(_useState, 2),
     text = _useState2[0],
@@ -247,9 +248,14 @@ export var Composer = /*#__PURE__*/React.forwardRef(function (props, ref) {
       disabled: !text || disableSend
     })));
   }
+  console.log("holai", {
+    refreshLabel: refreshLabel
+  });
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "Composer"
-  }, /*#__PURE__*/React.createElement(LeftAction, null), recorder.canRecord && /*#__PURE__*/React.createElement(Action, {
+  }, /*#__PURE__*/React.createElement(LeftAction, {
+    refreshLabel: refreshLabel
+  }), recorder.canRecord && /*#__PURE__*/React.createElement(Action, {
     className: "Composer-inputTypeBtn",
     "data-icon": inputTypeIcon,
     icon: inputTypeIcon,
