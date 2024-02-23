@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["className", "label", "checked", "disabled", "onChange"];
-var Radio = function Radio(props) {
+var Radio = exports.Radio = function Radio(props) {
   var className = props.className,
     label = props.label,
     checked = props.checked,
@@ -32,4 +32,3 @@ var Radio = function Radio(props) {
     className: "Radio-text"
   }, label));
 };
-exports.Radio = Radio;

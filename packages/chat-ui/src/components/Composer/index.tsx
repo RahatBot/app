@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useImperativeHandle, useCallback, ReactElement } from 'react';
 import clsx from 'clsx';
-import { IconButtonProps } from '../IconButton';
+import { IconButton, IconButtonProps } from '../IconButton';
 import { Recorder, RecorderProps } from '../Recorder';
 import { Toolbar, ToolbarItemProps } from '../Toolbar';
 import { AccessoryWrap } from './AccessoryWrap';
@@ -11,6 +11,7 @@ import { ComposerInput } from './ComposerInput';
 import { SendButton } from './SendButton';
 import { Action } from './Action';
 import toggleClass from '../../utils/toggleClass';
+import LeftAction from './LeftAction';
 
 export const CLASS_NAME_FOCUSING = 'S--focusing';
 
@@ -34,10 +35,12 @@ export type ComposerProps = {
   onToolbarClick?: (item: ToolbarItemProps, event: React.MouseEvent) => void;
   onAccessoryToggle?: (isAccessoryOpen: boolean) => void;
   rightAction?: IconButtonProps;
+  LeftAction?: any;
   disableSend:boolean;
   btnColor:string;
   voiceToText?:any;
   voiceToTextProps?:any;
+  refreshLabel?:string;
 };
 
 export interface ComposerHandle {
@@ -65,8 +68,10 @@ export const Composer = React.forwardRef<ComposerHandle, ComposerProps>((props, 
     toolbar = [],
     onToolbarClick,
     rightAction,
+   // LeftAction,
     inputOptions,
     btnColor,
+    refreshLabel
   } = props;
 
   
@@ -293,10 +298,14 @@ export const Composer = React.forwardRef<ComposerHandle, ComposerProps>((props, 
       </div>
     );
   }
-
+console.log("holai",{refreshLabel})
+ 
   return (
     <>
+   
       <div className="Composer">
+        {<LeftAction refreshLabel={refreshLabel}/> }
+         
         {recorder.canRecord && (
           <Action
             className="Composer-inputTypeBtn"
@@ -307,7 +316,7 @@ export const Composer = React.forwardRef<ComposerHandle, ComposerProps>((props, 
           />
         )}
         <div className="Composer-inputWrap" style={{border: `2px solid ${btnColor}`, borderRadius: '12px'}}>
-      <ComposerInput invisible={!isInputText} {...inputProps} disabled={disableSend} />
+         <ComposerInput invisible={!isInputText} {...inputProps} disabled={disableSend} />
           {!isInputText && <Recorder {...recorder} />}
         </div>
         {!text && rightAction && <Action {...rightAction} />}

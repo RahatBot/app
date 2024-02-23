@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import {
   FC,
   ReactElement,
@@ -7,25 +7,25 @@ import {
   useMemo,
   useState,
   useRef,
-} from 'react';
-import { AppContext } from '.';
-import _ from 'underscore';
-import { v4 as uuidv4 } from 'uuid';
-import { UserType } from '../types';
-import { IntlProvider } from 'react-intl';
-import { useLocalization } from '../hooks';
-import toast from 'react-hot-toast';
-import axios from 'axios';
-import { useCookies } from 'react-cookie';
+} from "react";
+import { AppContext } from ".";
+import _ from "underscore";
+import { v4 as uuidv4 } from "uuid";
+import { UserType } from "../types";
+import { IntlProvider } from "react-intl";
+import { useLocalization } from "../hooks";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useCookies } from "react-cookie";
 
 function loadMessages(locale: string) {
   switch (locale) {
-    case 'en':
-      return import('../../lang/en.json');
-    case 'hi':
-      return import('../../lang/hi.json');
+    case "en":
+      return import("../../lang/en.json");
+    case "hi":
+      return import("../../lang/hi.json");
     default:
-      return import('../../lang/en.json');
+      return import("../../lang/en.json");
   }
 }
 
@@ -48,7 +48,7 @@ const ContextProvider: FC<{
   const [isMsgReceiving, setIsMsgReceiving] = useState(false);
   const [messages, setMessages] = useState<Array<any>>([]);
   const [conversationId, setConversationId] = useState<string | null>(
-    sessionStorage.getItem('conversationId')
+    sessionStorage.getItem("conversationId")
   );
   const [isDown, setIsDown] = useState(true);
   const [showDialerPopup, setShowDialerPopup] = useState(false);
@@ -56,39 +56,90 @@ const ContextProvider: FC<{
   const [cookie, setCookie, removeCookie] = useCookies();
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const audioRef = useRef(null);
-  const [currentPdfId, setCurrentPdfId] = useState('');
+  const [currentPdfId, setCurrentPdfId] = useState("");
   const [keyword, setKeyword] = useState();
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    cookie['access_token'] && localStorage.getItem('userID')
-  );
-  const [showPdf, setShowPdf] = useState(false);
+ 
   const [conversations, setConversations] = useState([]);
   const [audioElement, setAudioElement] = useState(null);
   const [ttsLoader, setTtsLoader] = useState(false);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [clickedAudioUrl, setClickedAudioUrl] = useState<string | null>(null);
-
-  console.log(messages);
-
+  const [currentQuery, setCurrentQuery] = useState("");
+  const [activeAudioId, setActiveAudioId] = useState(null)
+   const [newConversationId,setNewConversationId]=useState(uuidv4());
+  useEffect(() => {
+    if (localStorage.getItem("locale")) {
+      const disasterString =
+        localStorage.getItem("locale") === "hi"
+        ? "सामान्य आपदा,कोरोना वायरस,भूकंप,बाढ़,आग,लू,आतंकी हमला,गड़गड़ाहट"
+        : "General Disaster,Coronavirus,Earthquake,Flood,Fire,Sunstroke,Terrorist Attack,Thunder";
+      const options = [
+        {
+          text: t('label.disasterList'),
+          position: "left",
+          repliedTimestamp: new Date().valueOf(),
+          exampleOptions: false,
+          payload: {
+            buttonChoices: disasterString
+              .split(",")
+              .map((item) => ({
+                key: item,
+                text: item,
+                backmenu: false,
+                hasFullWidth: true,
+              })),
+          text: t('label.disasterList'),
+          },
+        },
+      ];
+      setMessages(options);
+    } else {
+      const initialMsg = [
+        {
+          text: "Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language",
+          position: "left",
+          repliedTimestamp: new Date().valueOf(),
+          exampleOptions: true,
+          payload: {
+            buttonChoices: [
+              {
+                key: "hi",
+                text: "हिंदी",
+                backmenu: false,
+              },
+              {
+                key: "en",
+                text: "English",
+                backmenu: false,
+              },
+            ],
+            text: "Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language ",
+          },
+          isIgnore: false,
+        },
+      ];
+      setMessages(initialMsg);
+    }
+  }, [t]);
   async function base64WavToPlayableLink(base64Wav: string): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
         // Convert Base64 to binary
         const binaryWav = atob(base64Wav);
-  
+
         // Convert binary to ArrayBuffer
         const arrayBuffer = new ArrayBuffer(binaryWav.length);
         const view = new Uint8Array(arrayBuffer);
         for (let i = 0; i < binaryWav.length; i++) {
           view[i] = binaryWav.charCodeAt(i);
         }
-  
+
         // Create a Blob from ArrayBuffer
-        const blob = new Blob([arrayBuffer], { type: 'audio/wav' });
-  
+        const blob = new Blob([arrayBuffer], { type: "audio/wav" });
+
         // Create an object URL from Blob
         const url = URL.createObjectURL(blob);
-  
+
         resolve(url);
       } catch (error) {
         reject(error);
@@ -96,19 +147,123 @@ const ContextProvider: FC<{
     });
   }
 
-  const playAudio = useMemo(() => {
-    return async (url: string, content: any) => {
+  // const playAudio = useCallback(async (url: string, content: any) => {
+    
+    
+  //     if (!url) {
+  //       console.error('Audio URL not provided.');
+  //       return;
+  //     }
+  //     url = await base64WavToPlayableLink(url);
+  //     if (audioElement && url) {
+  //       //@ts-ignore
+  //       if (true) {
+  //         // If the same URL is provided and audio is paused, resume playback
+  //         //@ts-ignore
+  //         if (audioElement.paused) {
+  //           setClickedAudioUrl(url);
+  //           // setTtsLoader(true);
+  //           audioElement
+  //             //@ts-ignore
+  //             .play()
+  //             .then(() => {
+  //               // setTtsLoader(false);
+  //               setAudioPlaying(true);
+  //               console.log('Resumed audio:', url);
+  //             })
+  //             //@ts-ignore
+  //             .catch((error) => {
+  //               setAudioPlaying(false);
+  //               // setTtsLoader(false);
+  //               setAudioElement(null);
+  //               setClickedAudioUrl(null);
+  //               console.error('Error resuming audio:', error);
+  //             });
+  //         } else {
+  //           // Pause the current audio if it's playing
+  //           //@ts-ignore
+  //           audioElement.pause();
+  //           setAudioPlaying(false);
+  //           console.log('Paused audio:', url);
+  //         }
+  //         return;
+  //       } else {
+  //         // Pause the older audio if it's playing
+  //         //@ts-ignore
+  //         audioElement.pause();
+  //         setAudioPlaying(false);
+  //       }
+  //     }
+  //     setClickedAudioUrl(url);
+  //     // setTtsLoader(true);
+  //     const audio = new Audio(url);
+  //     audio.playbackRate = 1;
+  //     audio.addEventListener('ended', () => {
+  //       setAudioElement(null);
+  //       setAudioPlaying(false);
+  //     });
+  //     axios
+  //       .get(
+  //         `${process.env.NEXT_PUBLIC_BASE_URL}/incrementaudioused/${content?.data?.messageId}`
+  //       )
+  //       .then((res) => { })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //     audio
+  //       .play()
+  //       .then(() => {
+  //         // setTtsLoader(false);
+  //         setAudioPlaying(true);
+  //         console.log('Audio played:', url);
+  //         // Update the current audio to the new audio element
+  //         //@ts-ignore
+  //         setAudioElement(audio);
+  //       })
+  //       .catch((error) => {
+  //         setAudioPlaying(false);
+  //         // setTtsLoader(false);
+  //         setAudioElement(null);
+  //         setClickedAudioUrl(null);
+  //         console.error('Error playing audio:', error);
+  //       });
+    
+  // }, [audioElement]);
+
+  const playAudio = useCallback(async(url: string, content: any) => {
+    console.log("holai:",{content,url})
       if (!url) {
-        console.error('Audio URL not provided.');
+        console.error("Audio URL not provided.");
+        console.log("holai 1");
         return;
       }
-      url = await base64WavToPlayableLink(url);
+    url = await base64WavToPlayableLink(url);
+    console.log("holai:",{url,audioElement})
       if (audioElement) {
+        console.log("holai 2",{audioElement});
+       
+        //@ts-ignore
+        if(audioElement.paused){
+          //@ts-ignore
+         audioElement.play();
+         setAudioPlaying(true);
+         return;
+       }
+        //@ts-ignore
+        if(!audioElement.ended){
+          //@ts-ignore
+         audioElement.pause();
+         setAudioElement(null)
+         setAudioPlaying(false);
+         return;
+       }
         //@ts-ignore
         if (audioElement.src === url) {
+
           // If the same URL is provided and audio is paused, resume playback
           //@ts-ignore
           if (audioElement.paused) {
+            console.log("holai 4");
             setClickedAudioUrl(url);
             setTtsLoader(true);
             audioElement
@@ -117,7 +272,7 @@ const ContextProvider: FC<{
               .then(() => {
                 setTtsLoader(false);
                 setAudioPlaying(true);
-                console.log('Resumed audio:', url);
+                console.log("Resumed audio:", url);
               })
               //@ts-ignore
               .catch((error) => {
@@ -125,45 +280,48 @@ const ContextProvider: FC<{
                 setTtsLoader(false);
                 setAudioElement(null);
                 setClickedAudioUrl(null);
-                console.error('Error resuming audio:', error);
+                console.error("Error resuming audio:", error);
               });
           } else {
+  
             // Pause the current audio if it's playing
             //@ts-ignore
             audioElement.pause();
             setAudioPlaying(false);
-            console.log('Paused audio:', url);
+            console.log("Paused audio:", url);
           }
           return;
         } else {
+         
           // Pause the older audio if it's playing
           //@ts-ignore
           audioElement.pause();
-          setAudioPlaying(false);
+          if(isAudioPlaying){
+            setAudioPlaying(false);
+            return
+          }
+          
+          
         }
       }
+   
       setClickedAudioUrl(url);
       setTtsLoader(true);
       const audio = new Audio(url);
       audio.playbackRate = 1.15;
-      audio.addEventListener('ended', () => {
+      audio.addEventListener("ended", () => {
         setAudioElement(null);
         setAudioPlaying(false);
       });
-      // axios
-      //   .get(
-      //     `${process.env.NEXT_PUBLIC_BASE_URL}/incrementaudioused/${content?.data?.messageId}`
-      //   )
-      //   .then((res) => {})
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
+      
+     
       audio
         .play()
         .then(() => {
+          console.log("holai 8")
           setTtsLoader(false);
           setAudioPlaying(true);
-          console.log('Audio played:', url);
+          console.log("Audio played:", url);
           // Update the current audio to the new audio element
           //@ts-ignore
           setAudioElement(audio);
@@ -173,10 +331,10 @@ const ContextProvider: FC<{
           setTtsLoader(false);
           setAudioElement(null);
           setClickedAudioUrl(null);
-          console.error('Error playing audio:', error);
+          console.error("Error playing audio:", error);
         });
-    };
-  }, [audioElement]);
+    
+  }, [audioElement, isAudioPlaying]);
 
   const updateMsgState = useCallback(
     ({
@@ -186,20 +344,25 @@ const ContextProvider: FC<{
     }: {
       user: { name: string; id: string };
       msg: {
-        content: { title: string; choices: any, audio_url: string, flowEnd: string };
+        content: {
+          title: string;
+          choices: any;
+          audio_url: string;
+          flowEnd: string;
+        };
         messageId: string;
       };
       media: any;
     }) => {
-      console.log('hie', msg);
-      if (msg.content.title !== '') {
+      console.log("hie", msg);
+      if (msg.content.title !== "") {
         const newMsg = {
           username: user?.name,
           text: msg.content.title,
           choices: msg.content.choices,
           audio_url: msg.content.audio_url,
           flowEnd: msg.content.flowEnd,
-          position: 'left',
+          position: "left",
           id: user?.id,
           botUuid: user?.id,
           reaction: 0,
@@ -210,10 +373,10 @@ const ContextProvider: FC<{
           ...media,
         };
 
-        console.log('here', msg, conversationId);
+        console.log("here", msg, conversationId);
         //@ts-ignore
         if (conversationId === msg?.content?.conversationId) {
-          console.log('here', newMsg);
+          console.log("here", newMsg);
           setMessages((prev: any) => [...prev, newMsg]);
         }
       }
@@ -221,18 +384,18 @@ const ContextProvider: FC<{
     [conversationId]
   );
 
-  console.log('erty:', { conversationId });
+  console.log("erty:", { conversationId });
 
   const getConversations = useCallback(() => {
-    if (!cookie['access_token']) return;
+    if (!cookie["access_token"]) return;
     axios
       .get(`${process.env.NEXT_PUBLIC_BASE_URL}/user/conversations`, {
         headers: {
-          Authorization: `Bearer ${cookie['access_token']}`,
+          Authorization: `Bearer ${cookie["access_token"]}`,
         },
       })
       .then((res) => {
-        console.log('history', res.data);
+        console.log("history", res.data);
         const sortedConversations = [...res.data].sort((a, b) => {
           const dateA = new Date(a.updatedAt);
           const dateB = new Date(b.updatedAt);
@@ -245,7 +408,7 @@ const ContextProvider: FC<{
       })
       .catch((err) => {
         console.log(err);
-        toast.error('Could not load your chat history!');
+        toast.error("Could not load your chat history!");
       });
   }, [cookie]);
 
@@ -255,41 +418,41 @@ const ContextProvider: FC<{
 
   const onMessageReceived = useCallback(
     async (msg: any) => {
-      console.log('mssgs:', messages);
-      console.log('#-debug:', { msg });
+      console.log("mssgs:", messages);
+      console.log("#-debug:", { msg });
       setLoading(false);
       setIsMsgReceiving(false);
       //@ts-ignore
-      const user = JSON.parse(localStorage.getItem('currentUser'));
+      const user = JSON.parse(localStorage.getItem("currentUser"));
 
-      if (msg.content.msg_type.toUpperCase() === 'IMAGE') {
+      if (msg.content.msg_type.toUpperCase() === "IMAGE") {
         updateMsgState({
           user,
           msg,
           media: { imageUrl: msg?.content?.media_url },
         });
-      } else if (msg.content.msg_type.toUpperCase() === 'AUDIO') {
+      } else if (msg.content.msg_type.toUpperCase() === "AUDIO") {
         updateMsgState({
           user,
           msg,
           media: { audioUrl: msg?.content?.media_url },
         });
-      } else if (msg.content.msg_type.toUpperCase() === 'VIDEO') {
+      } else if (msg.content.msg_type.toUpperCase() === "VIDEO") {
         updateMsgState({
           user,
           msg,
           media: { videoUrl: msg?.content?.media_url },
         });
       } else if (
-        msg.content.msg_type.toUpperCase() === 'DOCUMENT' ||
-        msg.content.msg_type.toUpperCase() === 'FILE'
+        msg.content.msg_type.toUpperCase() === "DOCUMENT" ||
+        msg.content.msg_type.toUpperCase() === "FILE"
       ) {
         updateMsgState({
           user,
           msg,
           media: { fileUrl: msg?.content?.media_url },
         });
-      } else if (msg.content.msg_type.toUpperCase() === 'TEXT') {
+      } else if (msg.content.msg_type.toUpperCase() === "TEXT") {
         updateMsgState({ user, msg, media: {} });
       }
     },
@@ -304,6 +467,7 @@ const ContextProvider: FC<{
   //@ts-ignore
   const sendMessage = useCallback(
     async (text: string, media: any) => {
+      console.log("holai:",{text,media})
       // if (
       //   !localStorage.getItem('userID') ||
       //   !sessionStorage.getItem('conversationId')
@@ -319,10 +483,10 @@ const ContextProvider: FC<{
 
       //  console.log('mssgs:',messages)
       if (media) {
-        if (media.mimeType.slice(0, 5) === 'image') {
-        } else if (media.mimeType.slice(0, 5) === 'audio') {
-        } else if (media.mimeType.slice(0, 5) === 'video') {
-        } else if (media.mimeType.slice(0, 11) === 'application') {
+        if (media.mimeType.slice(0, 5) === "image") {
+        } else if (media.mimeType.slice(0, 5) === "audio") {
+        } else if (media.mimeType.slice(0, 5) === "video") {
+        } else if (media.mimeType.slice(0, 11) === "application") {
         } else {
         }
       } else {
@@ -332,9 +496,9 @@ const ContextProvider: FC<{
         setMessages((prev: any) => [
           ...prev.map((prevMsg: any) => ({ ...prevMsg })),
           {
-            username: localStorage.getItem('userID'),
+            username: localStorage.getItem("userID"),
             text: text,
-            position: 'right',
+            position: "right",
             botUuid: currentUser?.id,
             payload: { text },
             time: Date.now(),
@@ -351,9 +515,10 @@ const ContextProvider: FC<{
         //   // mobileNumber: localStorage.getItem('phoneNumber'),
         // };
         const data = {
-          "text": text,
-          "media": "",
-        }
+          text: text,
+          media: "",
+          inputLanguage: locale || "en",
+        };
 
         try {
           const response = await axios.post(
@@ -361,22 +526,23 @@ const ContextProvider: FC<{
             data,
             {
               headers: {
-                'Content-Type': 'application/json',
-                "user-id": localStorage.getItem('userID'),
+                "Content-Type": "application/json",
+                "user-id": localStorage.getItem("userID"),
+                "Conversation-Id" : newConversationId,
               },
             }
           );
 
           // Handle response here
-          console.log('hie', response?.data);
+          console.log("hie", response?.data);
           onMessageReceived({
             content: {
               title: response?.data?.text || response?.data?.error,
-              msg_type: 'TEXT',
+              msg_type: "TEXT",
               choices: null,
-              conversationId: sessionStorage.getItem('conversationId'),
-              audio_url: response?.data?.audio?.text || '',
-              flowEnd: response?.data?.flowEnd
+              conversationId: sessionStorage.getItem("conversationId"),
+              audio_url: response?.data?.audio?.text || "",
+              flowEnd: response?.data?.flowEnd,
             },
             messageId: response?.data?.messageId,
           });
@@ -384,11 +550,11 @@ const ContextProvider: FC<{
           // Handle error here
           onMessageReceived({
             content: {
-              title: 'Something went wrong. Please try again later.',
-              msg_type: 'TEXT',
+              title: "Something went wrong. Please try again later.",
+              msg_type: "TEXT",
               choices: null,
-              conversationId: sessionStorage.getItem('conversationId'),
-              audio_url: ''
+              conversationId: sessionStorage.getItem("conversationId"),
+              audio_url: "",
             },
             messageId: msgId,
           });
@@ -398,7 +564,7 @@ const ContextProvider: FC<{
         }
       }
     },
-    [currentUser?.id, onMessageReceived]
+    [currentUser?.id, locale, onMessageReceived,newConversationId]
   );
 
   const fetchIsDown = useCallback(async () => {
@@ -407,12 +573,12 @@ const ContextProvider: FC<{
         `${process.env.NEXT_PUBLIC_BASE_URL}/health/20`
       );
       const status = res.data.status;
-      console.log('hie', status);
-      if (status === 'OK') {
+      console.log("hie", status);
+      if (status === "OK") {
         setIsDown(false);
       } else {
         setIsDown(true);
-        console.log('Server status is not OK');
+        console.log("Server status is not OK");
       }
     } catch (error) {
       console.error(error);
@@ -424,10 +590,10 @@ const ContextProvider: FC<{
     let secondTimer: any;
     const timer = setTimeout(() => {
       if (isMsgReceiving && loading) {
-        toast.error(`${t('message.taking_longer')}`);
+        toast.error(`${t("message.taking_longer")}`);
         secondTimer = setTimeout(() => {
           if (isMsgReceiving && loading) {
-            toast.error(`${t('message.retry')}`);
+            toast.error(`${t("message.retry")}`);
             setIsMsgReceiving(false);
             setLoading(false);
             fetchIsDown();
@@ -483,18 +649,18 @@ const ContextProvider: FC<{
       setCurrentPdfId,
       keyword,
       setKeyword,
-      isLoggedIn,
-      setIsLoggedIn,
-      showPdf,
-      setShowPdf,
       getConversations,
       conversations,
       playAudio,
       ttsLoader,
       clickedAudioUrl,
-      audioPlaying
+      audioPlaying,
+      currentQuery,
+      setCurrentQuery,activeAudioId, setActiveAudioId,newConversationId,setNewConversationId
     }),
-    [
+    [activeAudioId, setActiveAudioId,
+      currentQuery,
+      setCurrentQuery,
       locale,
       setLocale,
       localeMsgs,
@@ -533,16 +699,12 @@ const ContextProvider: FC<{
       setCurrentPdfId,
       keyword,
       setKeyword,
-      isLoggedIn,
-      setIsLoggedIn,
-      showPdf,
-      setShowPdf,
       getConversations,
       conversations,
       playAudio,
       ttsLoader,
       clickedAudioUrl,
-      audioPlaying
+      audioPlaying,newConversationId,setNewConversationId
     ]
   );
 
@@ -557,12 +719,12 @@ const ContextProvider: FC<{
 };
 
 const SSR: FC<{ children: ReactElement }> = ({ children }) => {
-  const [locale, setLocale] = useState('');
+  const [locale, setLocale] = useState("");
   const [localeMsgs, setLocaleMsgs] = useState<Record<string, string> | null>(
     null
   );
   useEffect(() => {
-    setLocale(localStorage.getItem('locale') || 'en');
+    setLocale(localStorage.getItem("locale") || "en");
   }, []);
 
   useEffect(() => {
@@ -572,14 +734,15 @@ const SSR: FC<{ children: ReactElement }> = ({ children }) => {
     });
   }, [locale]);
 
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   return (
     //@ts-ignore
     <IntlProvider locale={locale} messages={localeMsgs}>
       <ContextProvider
         locale={locale}
         setLocale={setLocale}
-        localeMsgs={localeMsgs}>
+        localeMsgs={localeMsgs}
+      >
         {children}
       </ContextProvider>
     </IntlProvider>

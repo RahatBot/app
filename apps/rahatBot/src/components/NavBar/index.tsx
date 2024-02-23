@@ -1,96 +1,149 @@
-import { useState, useContext, useCallback, useEffect } from 'react';
-import styles from './index.module.css';
-import { AppContext } from '../../context';
-import { useLocalization } from '../../hooks';
-import HamburgerIcon from '../../assets/icons/burger-menu';
-import crossIcon from '../../assets/icons/crossIcon.svg';
-import Image from 'next/image';
-import LeftSide from '../LeftSide';
-import { v4 as uuidv4 } from 'uuid';
-import deleteIcon from '../../assets/icons/delete.svg';
-import pdfIcon from '../../assets/icons/pdfIcon.svg';
-import messageIcon from '../../assets/icons/message-menu.svg';
-import toast from 'react-hot-toast';
+import { useContext, useCallback, useEffect } from "react";
+import styles from "./index.module.css";
+import YogiModiImg from "../../assets/images/yogimodi.png";
+import UPGovtLogo from "../../assets/images/up-govt-logo.png";
+import plusIcon from "../../assets/icons/plus.svg";
+import Image from "next/image";
+import { logEvent } from "firebase/analytics";
+// import { analytics } from '../../utils/firebase';
+import { AppContext } from "../../context";
+import router from "next/router";
+import { v4 as uuidv4 } from "uuid";
+import { useLocalization } from "../../hooks";
+import toast from "react-hot-toast";
+import flagsmith from "flagsmith/isomorphic";
+import axios from "axios";
+import React from "react";
+import { useCookies } from "react-cookie";
+import { Sidemenu } from "../Sidemenu";
 
 function NavBar() {
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const context = useContext(AppContext);
   const t = useLocalization();
-  const [mobile, setMobile] = useState(window.innerWidth < 768);
+  const context = useContext(AppContext);
+  const [cookie, setCookies] = useCookies();
+
+  const [isEngActive, setIsEngActive] = React.useState(
+    localStorage.getItem("locale")
+      ? localStorage.getItem("locale") === "en"
+      : "en"
+  );
 
   useEffect(() => {
-    window.addEventListener('resize', handleWindowSizeChange);
-    return () => {
-      window.removeEventListener('resize', handleWindowSizeChange);
-    };
-  }, []);
+    setIsEngActive(context?.locale === "en");
+  }, [context?.locale]);
 
-  const handleWindowSizeChange = () => {
-    if (window.innerWidth < 768) {
-      setMobile(true);
-    } else setMobile(false);
-  };
-
-  useEffect(() => {
-    const storedLanguage = localStorage.getItem('locale');
-    if (storedLanguage) {
-      setSelectedLanguage(storedLanguage);
-    } else {
-      localStorage.setItem('locale', 'en');
-    }
-  }, []);
-
-  const toggleLanguage = useCallback(
-    (event: any) => {
-      const newLanguage = event.target.value;
-      localStorage.setItem('locale', newLanguage);
-      context?.setLocale(newLanguage);
-      setSelectedLanguage(newLanguage);
+  const toggleLanguage = React.useCallback(
+    (newLanguage: string) => () => {
+      if (newLanguage === context?.locale) return;
+      const message =
+        context?.locale === "hi"
+          ? "भाषा बटन को टॉगल करने से भाषा बदल जाएगी और वर्तमान सत्र पुनः आरंभ हो जाएगा"
+          : "Toggling the language button will change language and restart the current session";
+      if (window?.confirm(message)) {
+        localStorage.setItem("locale", newLanguage);
+        context?.setLocale(newLanguage);
+        context?.setNewConversationId(uuidv4())
+        setIsEngActive((prev) => (prev === true ? false : true));
+      }
     },
     [context]
   );
 
-  function toggleMobileMenu() {
-    context?.setCollapsed((prev: any) => !prev);
-  }
-
-  const newChatHandler = () => {
-    if (context?.loading) {
-      toast.error('Please wait for a response!');
+  const newChatHandler = useCallback(() => {
+    if (context?.isMsgReceiving) {
+      toast.error(`${t("error.wait_new_chat")}`);
       return;
     }
-    context?.setMessages([]);
-    const newConversationId = uuidv4();
-    const newUserId = uuidv4();
-    localStorage.setItem('userID', newUserId);
-    sessionStorage.setItem('conversationId', newConversationId);
-    context?.setConversationId(newConversationId);
-    toast.success('New chat started!');
-  };
 
-  return (
-    <div className={styles.navbar}>
-      {/* {mobile && (
-        <div className={styles.mobileView}>
-          <LeftSide show={context?.collapsed} />
+    const newConversationId = uuidv4();
+    sessionStorage.setItem("conversationId", newConversationId);
+    if (context?.audioElement) context?.audioElement.pause();
+    if (context?.setAudioPlaying) context?.setAudioPlaying(false);
+    context?.setConversationId(newConversationId);
+    context?.setMessages([]);
+    context?.setIsMsgReceiving(false);
+    context?.setLoading(false);
+    router.push("/");
+    toast.success(`${t("label.new_chat_started")}`);
+  }, [context, t]);
+
+  if (router.pathname === "/chat" && !context?.isDown) {
+    return (
+      <div className={styles.navbar + " " + styles.main}>
+        <div
+          style={{ width: "120px", display: "flex", alignItems: "flex-end" }}
+        >
+          {/* <Sidemenu /> */}
+          <div
+            style={{
+              paddingLeft: "15px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Image
+              src={plusIcon}
+              alt=""
+              width={28}
+              height={28}
+              onClick={newChatHandler}
+            />
+            <p style={{ color: "var(--primary)", fontSize: "12px" }}>
+              {t("label.new_chat")}
+            </p>
+          </div>
         </div>
-      )}
-      <div className={styles.hamburgerIcon} onClick={toggleMobileMenu}>
-        {context?.collapsed ? (
-          <Image src={crossIcon} alt="" height={25} width={25} />
-        ) : (
-          <HamburgerIcon color="#b99825" />
-        )}
-      </div> */}
-      <div className={styles.navbarHeading}>{t('label.title')}</div>
-      {/* {mobile && <div className={styles.newChatContainer} onClick={showPdfHandler}>
-        {context?.showPdf ? <Image src={messageIcon} alt=""  width={20} height={20}/> : <Image src={pdfIcon} alt="" width={20} height={20} />}
-      </div>} */}
-      <div className={styles.newChatContainer} onClick={newChatHandler}>
-        <Image src={deleteIcon} alt="" width={20} height={20} />
+        <div>
+          <Image src={UPGovtLogo} alt="" width={60} height={60} />
+        </div>
+        <div>
+          <Image src={YogiModiImg} alt="" width={110} height={65} />
+        </div>
       </div>
-    </div>
-  );
+    );
+  } else
+    return (
+      <div
+        className={styles.main}
+        style={router.pathname === "/login" ? { height: "120px" } : {}}
+      >
+        <div className={styles.navbar}>
+          {/* <Sidemenu /> */}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <button
+              id="eng"
+              className={isEngActive ? styles.active : styles.btn}
+              style={{ borderRadius: "10px 0px 0px 10px" }}
+              onClick={toggleLanguage("en")}
+            >
+              ENG
+            </button>
+            <button
+              id="hindi"
+              className={!isEngActive ? styles.active : styles.btn}
+              style={{ borderRadius: "0px 10px 10px 0px" }}
+              onClick={toggleLanguage("hi")}
+            >
+              हिंदी
+            </button>
+          </div>
+
+          <div>
+            <Image src={UPGovtLogo} alt="" width={60} height={60} />
+          </div>
+          <div>
+            <Image src={YogiModiImg} alt="" width={110} height={65} />
+          </div>
+        </div>
+
+        <div
+          className={styles.title}
+          dangerouslySetInnerHTML={{ __html: t("label.title") }}
+        ></div>
+      </div>
+    );
 }
 
 export default NavBar;

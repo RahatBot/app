@@ -15,7 +15,7 @@ function getEl(el) {
   }
   return typeof el === 'function' ? el() : el.current || el;
 }
-var Portal = function Portal(props) {
+var Portal = exports.Portal = function Portal(props) {
   var children = props.children,
     _props$container = props.container,
     container = _props$container === void 0 ? document.body : _props$container,
@@ -34,4 +34,3 @@ var Portal = function Portal(props) {
   }, [mountNode, onRendered]);
   return mountNode ? /*#__PURE__*/(0, _reactDom.createPortal)(children, mountNode) : mountNode;
 };
-exports.Portal = Portal;

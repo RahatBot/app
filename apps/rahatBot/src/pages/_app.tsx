@@ -2,14 +2,17 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { ChakraProvider } from '@chakra-ui/react';
 import ContextProvider from '../context/ContextProvider';
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import 'chatui/dist/index.css';
 import { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
+import dynamic from 'next/dynamic';
 // import flagsmith from 'flagsmith/isomorphic';
 // import { FlagsmithProvider } from 'flagsmith/react';
-
+const LaunchPage = dynamic(() => import('../components/LaunchPage'), {
+  ssr: false,
+});
 function SafeHydrate({ children }: { children: ReactElement }) {
   return (
     <div suppressHydrationWarning>
@@ -19,6 +22,13 @@ function SafeHydrate({ children }: { children: ReactElement }) {
 }
 
 const App = ({ Component, pageProps }: AppProps) => {
+  const [launch, setLaunch] = useState(true);
+  useEffect(() => {
+   
+    setTimeout(() => {
+      setLaunch(false);
+    }, 2500);
+  }, []);
   // const [flagsmithState, setflagsmithState] = useState(null);
 
   // useEffect(() => {
@@ -45,7 +55,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   if (process.env.NODE_ENV === 'production') {
     globalThis.console.log = () => {};
   }
-
+if(launch) return <LaunchPage />
   return (
     <ChakraProvider>
       {/* @ts-ignore */}
@@ -64,3 +74,4 @@ const App = ({ Component, pageProps }: AppProps) => {
 };
 
 export default App;
+

@@ -16,7 +16,7 @@ var _Tag = require("../Tag");
 var _IconButton = require("../IconButton");
 var _Button = require("../Button");
 var _excluded = ["className", "type", "img", "name", "desc", "tags", "locale", "currency", "price", "count", "unit", "action", "children", "originalPrice", "meta", "status"];
-var Goods = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var Goods = exports.Goods = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var className = props.className,
     type = props.type,
     img = props.img,
@@ -93,4 +93,3 @@ var Goods = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     className: "Goods-detailBtn"
   }, action))));
 });
-exports.Goods = Goods;

@@ -8,7 +8,7 @@ exports.ToolbarButton = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _Button = require("../Button");
 var _Icon = require("../Icon");
-var ToolbarButton = function ToolbarButton(props) {
+var ToolbarButton = exports.ToolbarButton = function ToolbarButton(props) {
   var item = props.item,
     _onClick = props.onClick;
   var type = item.type,
@@ -35,4 +35,3 @@ var ToolbarButton = function ToolbarButton(props) {
     className: "Toolbar-btnText"
   }, title)));
 };
-exports.ToolbarButton = ToolbarButton;

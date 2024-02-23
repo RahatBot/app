@@ -6,8 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Tab = void 0;
 var _react = _interopRequireDefault(require("react"));
-var Tab = function Tab(_ref) {
+var Tab = exports.Tab = function Tab(_ref) {
   var children = _ref.children;
   return /*#__PURE__*/_react.default.createElement("div", null, children);
 };
-exports.Tab = Tab;

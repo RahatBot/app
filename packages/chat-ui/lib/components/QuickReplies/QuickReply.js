@@ -8,7 +8,7 @@ exports.QuickReply = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _Icon = require("../Icon");
-var QuickReply = function QuickReply(props) {
+var QuickReply = exports.QuickReply = function QuickReply(props) {
   var item = props.item,
     index = props.index,
     onClick = props.onClick;
@@ -34,4 +34,3 @@ var QuickReply = function QuickReply(props) {
     alt: ""
   }), /*#__PURE__*/_react.default.createElement("span", null, item.name)));
 };
-exports.QuickReply = QuickReply;

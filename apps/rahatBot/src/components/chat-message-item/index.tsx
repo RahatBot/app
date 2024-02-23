@@ -9,8 +9,8 @@ import {
   Typing,
   RichText,
   //@ts-ignore
-} from 'chatui';
-import axios from 'axios';
+} from "chatui";
+import axios from "axios";
 import React, {
   FC,
   ReactElement,
@@ -18,33 +18,33 @@ import React, {
   useContext,
   useEffect,
   useState,
-} from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { toast } from 'react-hot-toast';
-import Image from 'next/image';
-import styles from './index.module.css';
-import RightIcon from '../../assets/icons/right.jsx';
-import SpeakerIcon from '../../assets/icons/speaker.svg';
-import SpeakerPauseIcon from '../../assets/icons/speakerPause.svg';
-import reloadIcon from '../../assets/icons/reload.svg';
-import CopyText from '../../assets/icons/copy-text.svg';
-import MsgThumbsUp from '../../assets/icons/msg-thumbs-up.jsx';
-import MsgThumbsDown from '../../assets/icons/msg-thumbs-down.jsx';
-import { AppContext } from '../../context';
-import { ChatMessageItemPropType } from '../../types';
-import { getFormatedTime } from '../../utils/getUtcTime';
-import { useLocalization } from '../../hooks/useLocalization';
-import { getReactionUrl } from '../../utils/getUrls';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
-import { Button } from '@chakra-ui/react';
-import { useCookies } from 'react-cookie';
-import Loader from '../loader';
+} from "react";
+import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-hot-toast";
+import Image from "next/image";
+import styles from "./index.module.css";
+import RightIcon from "../../assets/icons/right.jsx";
+import SpeakerIcon from "../../assets/icons/speaker.svg";
+import SpeakerPauseIcon from "../../assets/icons/speakerPause.png";
+import reloadIcon from "../../assets/icons/reload.svg";
+import CopyText from "../../assets/icons/copy-text.svg";
+import MsgThumbsUp from "../../assets/icons/msg-thumbs-up.jsx";
+import MsgThumbsDown from "../../assets/icons/msg-thumbs-down.jsx";
+import { AppContext } from "../../context";
+import { ChatMessageItemPropType } from "../../types";
+import { getFormatedTime } from "../../utils/getUtcTime";
+import { useLocalization } from "../../hooks/useLocalization";
+import { getReactionUrl } from "../../utils/getUrls";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import { Button } from "@chakra-ui/react";
+import { useCookies } from "react-cookie";
+import Loader from "../loader";
 
 const getToastMessage = (t: any, reaction: number): string => {
-  if (reaction === 1) return t('toast.reaction_like');
-  return t('toast.reaction_reset');
+  if (reaction === 1) return t("toast.reaction_like");
+  return t("toast.reaction_reset");
 };
 const ChatMessageItem: FC<ChatMessageItemPropType> = ({
   currentUser,
@@ -54,28 +54,68 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
   const t = useLocalization();
   const context = useContext(AppContext);
   const [reaction, setReaction] = useState(message?.content?.data?.reaction);
-  const [cookies, setCookie, removeCookie] = useCookies(['access_token']);
+  const [cookies, setCookie, removeCookie] = useCookies(["access_token"]);
 
   useEffect(() => {
     setReaction(message?.content?.data?.reaction);
   }, [message?.content?.data?.reaction]);
 
+  const showDisasterOptions = useCallback(
+    (lang: string) => {
+      context?.setNewConversationId(uuidv4());
+      const disasterString =
+        lang === "hi"
+        ? "सामान्य आपदा,कोरोना वायरस,भूकंप,बाढ़,आग,लू,आतंकी हमला,गड़गड़ाहट"
+        : "General Disaster,Coronavirus,Earthquake,Flood,Fire,Sunstroke,Terrorist Attack,Thunder";
+      const options = [
+        {
+        //  text: lang === "hi" ? "आपदा चुनें" : "Select Disaster",
+          text: t('label.disasterList') ,
+          position: "left",
+          repliedTimestamp: new Date().valueOf(),
+          exampleOptions: false,
+          payload: {
+            buttonChoices: disasterString
+              .split(",")
+              .map((item) => ({
+                key: item,
+                text: item,
+                backmenu: false,
+                hasFullWidth: true,
+              })),
+            text: t('label.disasterList'),
+          },
+        },
+      ];
+      context?.setMessages((prev: any) => [...prev, ...options]);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [context?.setMessages,t,context?.setNewConversationId]
+  );
+
+  
   const onLikeDislike = useCallback(
     ({ value, msgId }: { value: 0 | 1 | -1; msgId: string }) => {
       let url = getReactionUrl({ msgId, reaction: value });
-
+      if (value === -1) {
+        context?.setCurrentQuery(msgId);
+        context?.setShowDialerPopup(true);
+        return
+      }
       axios
         .get(url, {
-          headers: {
-            authorization: `Bearer ${cookies.access_token}`,
-          },
+          // headers: {
+          //   authorization: `Bearer ${cookies.access_token}`,
+          // },
         })
         .then((res: any) => {
-          if (value === -1) {
-            context?.setShowDialerPopup(true);
-          } else {
+          // if (value === -1) {
+          //   context?.setCurrentQuery(msgId);
+          //   context?.setShowDialerPopup(true);
+          // } 
+          
             toast.success(`${getToastMessage(t, value)}`);
-          }
+          
         })
         .catch((error: any) => {
           console.error(error);
@@ -86,32 +126,32 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
   );
 
   async function copyTextToClipboard(text: string) {
-    console.log('here');
-    if ('clipboard' in navigator) {
+    console.log("here");
+    if ("clipboard" in navigator) {
       return await navigator.clipboard.writeText(text);
     } else {
-      return document.execCommand('copy', true, text);
+      return document.execCommand("copy", true, text);
     }
   }
   const feedbackHandler = useCallback(
     ({ like, msgId }: { like: 0 | 1 | -1; msgId: string }) => {
-      console.log('vbnm:', { reaction, like, msgId });
+      console.log("vbnm:", { reaction, like, msgId });
       if (reaction === 0) {
         setReaction(like);
         return onLikeDislike({ value: like, msgId });
       }
       if (reaction === 1 && like === -1) {
-        console.log('vbnm triggered 1');
+        console.log("vbnm triggered 1");
         setReaction(-1);
         return onLikeDislike({ value: -1, msgId });
       }
       if (reaction === -1 && like === 1) {
-        console.log('vbnm triggered 2');
+        console.log("vbnm triggered 2");
         setReaction(1);
         return onLikeDislike({ value: 1, msgId });
       }
 
-      console.log('vbnm triggered');
+      console.log("vbnm triggered");
       onLikeDislike({ value: 0, msgId });
       setReaction(0);
     },
@@ -120,39 +160,52 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
 
   const getLists = useCallback(
     ({ choices, isDisabled }: { choices: any; isDisabled: boolean }) => {
-      console.log('qwer12:', { choices, isDisabled });
+      console.log("hola qwer12:", {
+        choices,
+        isDisabled,
+        isFull: !context?.messages?.[0]?.exampleOptions,
+      });
       return (
-        <List className={`${styles.list}`}>
+        <List
+          className={`${context?.messages?.[0]?.exampleOptions
+              ? styles.list
+              : styles.fullList
+            }`}
+        >
           {choices?.map((choice: any, index: string) => (
-            // {_.map(choices ?? [], (choice, index) => (
             <ListItem
               key={`${index}_${choice?.key}`}
-              className={`${styles.onHover} ${styles.listItem}`}
+              className={`${styles.onHover} ${choice?.hasFullWidth ? styles.fullListItem : styles.listItem
+                }`}
               onClick={(e: any): void => {
                 e.preventDefault();
-                console.log('qwer12 trig', { key: choice.key, isDisabled });
+                console.log("hola", { key: choice.key, isDisabled });
                 if (isDisabled) {
-                  toast.error(`${t('message.cannot_answer_again')}`);
+                  toast.error(`${t("message.cannot_answer_again")}`);
                 } else {
                   if (context?.messages?.[0]?.exampleOptions) {
-                    console.log('clearing chat');
+                    console.log("clearing chat");
+                    console.log("hola:", { key: choice?.key });
                     context?.setMessages([]);
-                  }
-                  // context?.sendMessage(choice.text);
+                    localStorage.setItem("locale", choice?.key);
+                    context?.setLocale(choice?.key);
+                    showDisasterOptions(choice?.key);
+                  } else context?.sendMessage(choice.text);
                 }
-              }}>
-              <div className="onHover" style={{ display: 'flex' }}>
-                <div>{choice.text}</div>
-                <div style={{ marginLeft: 'auto' }}>
+              }}
+            >
+              <div className="onHover">
+                <div style={{ textAlign: "center" }}>{choice.text}</div>
+                {/* <div style={{ marginLeft: 'auto' }}>
                   <RightIcon width="5.5vh" color="var(--secondary)" />
-                </div>
+                </div> */}
               </div>
             </ListItem>
           ))}
         </List>
       );
     },
-    [context, t]
+    [context, showDisasterOptions, t]
   );
 
   // useEffect(() => {
@@ -216,122 +269,139 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
   // };
 
   const newChatHandler = () => {
-    if (context?.loading) {
-      toast.error('Please wait for a response!');
-      return;
-    }
-    context?.setMessages([]);
-    const newConversationId = uuidv4();
-    const newUserId = uuidv4();
-    localStorage.setItem('userID', newUserId);
-    sessionStorage.setItem('conversationId', newConversationId);
-    context?.setConversationId(newConversationId);
-    toast.success('New chat started!');
+    showDisasterOptions(context?.locale)
+    // if (context?.loading) {
+    //   toast.error("Please wait for a response!");
+    //   return;
+    // }
+    // context?.setMessages([]);
+    // const newConversationId = uuidv4();
+    // const newUserId = uuidv4();
+    // localStorage.setItem("userID", newUserId);
+    // sessionStorage.setItem("conversationId", newConversationId);
+    // context?.setConversationId(newConversationId);
+    // toast.success("New chat started!");
   };
 
   const { content, type } = message;
+  console.log({ content });
 
-  const handleAudio = (url: any) => {
+  const handleAudio = (url: any,id:string) => {
     // console.log(url)
     if (!url) {
-      toast.error('No audio');
+      toast.error("No audio");
       return;
     }
-    context?.playAudio(url, content);
+   context?.setActiveAudioId(id)
+   setTimeout(()=>{ context?.playAudio(url, content);},10)
+    
+    
   };
+
+ 
   // const sanitizedText = content?.text?.replace(/\n/g, '\n ');
 
   // const formattedContent = sanitizedText ? sanitizedText
   //   ?.split(' ')
   //   ?.map((word: any, index: number) => addMarkup(word))
   //   ?.join(' ') : 'Something went wrong. Please try later.';
-
+console.log("shriram:",{rr:content?.text})
   switch (type) {
-    case 'loader':
+    case "loader":
       return <Typing />;
-    case 'text':
+    case "text":
       return (
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            position: 'relative',
-            maxWidth: '100%',
-          }}>
+            display: "flex",
+            flexDirection: "column",
+            position: "relative",
+            maxWidth: "100%",
+          }}
+        >
           {/* <div
             className={
               content?.data?.position === 'right'
                 ? styles.messageTriangleRight
                 : styles.messageTriangleLeft
             }></div> */}
-          <Bubble type="text">
+          <Bubble type="text" style={{textAlign:'left'}}>
             <span
               className={styles.onHover}
               style={{
                 fontWeight: 600,
-                fontSize: '16px',
+                fontSize: "16px",
                 color:
-                  content?.data?.position === 'right' ? 'white' : 'var(--font)',
-              }}>
+                  content?.data?.position === "right" ? "white" : "var(--font)",
+              }}
+            >
               <Markdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
+                className="text-right"
                 components={{
                   li: ({ children }) => (
-                    <li style={{ marginLeft: '20px' }}>{children}</li>
+                    <li style={{ marginLeft: "20px" ,textAlign:'right'}}>dd{children}</li>
                   ),
                   a: ({ node, ...props }) => (
                     <a
                       target="_blank"
                       style={{
-                        textDecoration: 'underline',
-                        color: '#0000ffb7',
+                        textDecoration: "underline",
+                        color: "#0000ffb7",
                       }}
-                      {...props}>
+                      {...props}
+                    >
                       {props.children}
                     </a>
                   ),
-                }}>
-                {content?.text}
+                }}
+              >
+           
+           {  content?.text.replace(/-/g," ") }
+             
+          
               </Markdown>
               {/* <RichText content={formatText(formattedContent)} /> */}
             </span>
             <div
               style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-              }}>
+                display: "flex",
+                justifyContent: "flex-end",
+              }}
+            >
               <span
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
+                  display: "flex",
+                  alignItems: "center",
                   color:
-                    content?.data?.position === 'right'
-                      ? 'white'
-                      : 'var(--font)',
-                  fontSize: '12px',
+                    content?.data?.position === "right"
+                      ? "white"
+                      : "var(--font)",
+                  fontSize: "12px",
                 }}
-                className="font-regular">
+                className="font-regular"
+              >
                 {getFormatedTime(
                   content?.data?.sentTimestamp ||
-                    content?.data?.repliedTimestamp
+                  content?.data?.repliedTimestamp
                 )}
               </span>
             </div>
           </Bubble>
-          {content?.data?.position === 'left' && (
-            <div
-              style={{ display: 'flex', position: 'relative', top: '-5px' }}>
+          {content?.data?.position === "left" && (
+            <div style={{ display: "flex", position: "relative", top: "-5px" }}>
               <div className={styles.msgFeedback}>
                 <div className={styles.msgFeedbackIcons}>
                   <div
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: "pointer" }}
                     onClick={() =>
                       feedbackHandler({
                         like: 1,
                         msgId: content?.data?.messageId,
                       })
-                    }>
+                    }
+                  >
                     <MsgThumbsUp
                       fill={reaction === 1}
                       width="20px"
@@ -339,13 +409,14 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                     />
                   </div>
                   <div
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: "pointer" }}
                     onClick={() =>
                       feedbackHandler({
                         like: -1,
                         msgId: content?.data?.messageId,
                       })
-                    }>
+                    }
+                  >
                     <MsgThumbsDown
                       fill={reaction === -1}
                       width="20px"
@@ -354,18 +425,21 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                   </div>
                 </div>
                 &nbsp;
-                <p>{t('message.helpful')}</p>
+                <p>{t("message.helpful")}</p>
               </div>
               <div
                 className={styles.msgSpeaker}
-                onClick={() => handleAudio(content?.data?.audio_url || '')}>
+                onClick={() => handleAudio(content?.data?.audio_url || "",content?.data?.messageId)}
+              >
+               
                 {context?.clickedAudioUrl === content?.data?.audio_url ? (
                   context?.ttsLoader ? (
                     <Loader />
                   ) : (
                     <Image
                       src={
-                        !context?.audioPlaying ? SpeakerIcon : SpeakerPauseIcon
+                        // !context?.audioPlaying ? SpeakerIcon : SpeakerPauseIcon
+                        context?.audioPlaying ?  SpeakerPauseIcon : SpeakerIcon 
                       }
                       width={!context?.audioPlaying ? 15 : 40}
                       height={!context?.audioPlaying ? 15 : 30}
@@ -373,44 +447,83 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                     />
                   )
                 ) : (
-                  <Image src={SpeakerIcon} width={15} height={15} alt="" />
-                  )}
+                  <Image src={context?.activeAudioId === content?.data?.messageId && context?.audioPlaying ?    SpeakerPauseIcon : SpeakerIcon } width={15} height={15} alt="" />
+                )}
               </div>
             </div>
           )}
-          {content?.data?.position === 'left' && content?.data?.flowEnd === "true" && (
-            <div className={styles.reloadButton} onClick={newChatHandler}>
-              <Image src={reloadIcon} width={25} height={25} alt="" />
-            </div>
-          )}
+          
+          {content?.data?.position === "left" && (
+            // content?.data?.flowEnd === "true" && (
+              <div className={styles.reloadButton} onClick={newChatHandler}>
+                <Image src={reloadIcon} width={25} height={25} alt="" />
+              </div>
+            )}
         </div>
       );
-
-    case 'image': {
+    case "options": {
+      return (
+        <Bubble type="text">
+          <div style={{ display: "flex" }}>
+            <span
+              style={{ fontSize: "16px" }}
+              dangerouslySetInnerHTML={{ __html: `${content?.text}` }}
+            ></span>
+          </div>
+          <div style={{ marginTop: "10px" }} />
+          {getLists({
+            choices:
+              content?.data?.payload?.buttonChoices ?? content?.data?.choices,
+            isDisabled: content?.data?.disabled,
+          })}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "self-end",
+            }}
+          >
+            <span style={{ color: "var(--grey)", fontSize: "10px" }}>
+              {/* {moment
+          .utc(
+            content?.data?.sentTimestamp ||
+              content?.data?.repliedTimestamp
+          )
+          .local()
+          .format("DD/MM/YYYY : hh:mm")} */}
+            </span>
+            <span></span>
+          </div>
+        </Bubble>
+      );
+    }
+    case "image": {
       const url = content?.data?.payload?.media?.url || content?.data?.imageUrl;
       return (
         <>
-          {content?.data?.position === 'left' && (
+          {content?.data?.position === "left" && (
             <div
               style={{
-                width: '40px',
-                marginRight: '4px',
-                textAlign: 'center',
-              }}></div>
+                width: "40px",
+                marginRight: "4px",
+                textAlign: "center",
+              }}
+            ></div>
           )}
           <Bubble type="image">
-            <div style={{ padding: '7px' }}>
+            <div style={{ padding: "7px" }}>
               <Img src={url} width="299" height="200" alt="image" lazy fluid />
               <div
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'self-end',
-                }}>
-                <span style={{ color: 'var(--font)', fontSize: '10px' }}>
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "self-end",
+                }}
+              >
+                <span style={{ color: "var(--font)", fontSize: "10px" }}>
                   {getFormatedTime(
                     content?.data?.sentTimestamp ||
-                      content?.data?.repliedTimestamp
+                    content?.data?.repliedTimestamp
                   )}
                 </span>
               </div>
@@ -420,31 +533,33 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
       );
     }
 
-    case 'file': {
+    case "file": {
       const url = content?.data?.payload?.media?.url || content?.data?.fileUrl;
       return (
         <>
-          {content?.data?.position === 'left' && (
+          {content?.data?.position === "left" && (
             <div
               style={{
-                width: '40px',
-                marginRight: '4px',
-                textAlign: 'center',
-              }}></div>
+                width: "40px",
+                marginRight: "4px",
+                textAlign: "center",
+              }}
+            ></div>
           )}
           <Bubble type="image">
-            <div style={{ padding: '7px' }}>
+            <div style={{ padding: "7px" }}>
               <FileCard file={url} extension="pdf" />
               <div
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'self-end',
-                }}>
-                <span style={{ color: 'var(--font)', fontSize: '10px' }}>
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "self-end",
+                }}
+              >
+                <span style={{ color: "var(--font)", fontSize: "10px" }}>
                   {getFormatedTime(
                     content?.data?.sentTimestamp ||
-                      content?.data?.repliedTimestamp
+                    content?.data?.repliedTimestamp
                   )}
                 </span>
               </div>
@@ -454,20 +569,21 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
       );
     }
 
-    case 'video': {
+    case "video": {
       const url = content?.data?.payload?.media?.url || content?.data?.videoUrl;
       return (
         <>
-          {content?.data?.position === 'left' && (
+          {content?.data?.position === "left" && (
             <div
               style={{
-                width: '40px',
-                marginRight: '4px',
-                textAlign: 'center',
-              }}></div>
+                width: "40px",
+                marginRight: "4px",
+                textAlign: "center",
+              }}
+            ></div>
           )}
           <Bubble type="image">
-            <div style={{ padding: '7px' }}>
+            <div style={{ padding: "7px" }}>
               <Video
                 cover="https://uxwing.com/wp-content/themes/uxwing/download/video-photography-multimedia/video-icon.png"
                 src={url}
@@ -475,14 +591,15 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
 
               <div
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'self-end',
-                }}>
-                <span style={{ color: 'var(--font)', fontSize: '10px' }}>
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "self-end",
+                }}
+              >
+                <span style={{ color: "var(--font)", fontSize: "10px" }}>
                   {getFormatedTime(
                     content?.data?.sentTimestamp ||
-                      content?.data?.repliedTimestamp
+                    content?.data?.repliedTimestamp
                   )}
                 </span>
               </div>
@@ -491,28 +608,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
         </>
       );
     }
-    case 'options': {
-      console.log('qwe12:', { content });
-      return (
-        <>
-          {/* <div
-            style={{ width: "95px", marginRight: "4px", textAlign: "center" }}
-          ></div> */}
-          <Bubble type="text" className={styles.textBubble}>
-            <div style={{ display: 'flex' }}>
-              <span className={styles.optionsText}>
-                {content?.data?.payload?.text}
-              </span>
-            </div>
-            {getLists({
-              choices:
-                content?.data?.payload?.buttonChoices ?? content?.data?.choices,
-              isDisabled: false,
-            })}
-          </Bubble>
-        </>
-      );
-    }
+
     default:
       return (
         <ScrollView

@@ -9,7 +9,7 @@ var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _Label = require("../Label");
 var _HelpText = require("../HelpText");
-var FormItem = function FormItem(props) {
+var FormItem = exports.FormItem = function FormItem(props) {
   var label = props.label,
     help = props.help,
     required = props.required,
@@ -24,4 +24,3 @@ var FormItem = function FormItem(props) {
     hidden: hidden
   }, label && /*#__PURE__*/_react.default.createElement(_Label.Label, null, label), children, help && /*#__PURE__*/_react.default.createElement(_HelpText.HelpText, null, help));
 };
-exports.FormItem = FormItem;

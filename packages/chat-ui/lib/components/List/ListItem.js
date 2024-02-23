@@ -11,7 +11,7 @@ var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _Icon = require("../Icon");
 var _excluded = ["className", "as", "content", "rightIcon", "children", "onClick"];
-var ListItem = function ListItem(props) {
+var ListItem = exports.ListItem = function ListItem(props) {
   var className = props.className,
     _props$as = props.as,
     Element = _props$as === void 0 ? 'div' : _props$as,
@@ -30,4 +30,3 @@ var ListItem = function ListItem(props) {
     type: rightIcon
   }));
 };
-exports.ListItem = ListItem;

@@ -1,8 +1,8 @@
 import _extends from "@babel/runtime/helpers/esm/extends";
 import _defineProperty from "@babel/runtime/helpers/esm/defineProperty";
 import _slicedToArray from "@babel/runtime/helpers/esm/slicedToArray";
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 import React, { useState, useRef, useEffect, useImperativeHandle, useCallback } from 'react';
 import clsx from 'clsx';
 import { Recorder } from '../Recorder';
@@ -14,6 +14,7 @@ import { ComposerInput } from './ComposerInput';
 import { SendButton } from './SendButton';
 import { Action } from './Action';
 import toggleClass from '../../utils/toggleClass';
+import LeftAction from './LeftAction';
 export var CLASS_NAME_FOCUSING = 'S--focusing';
 export var Composer = /*#__PURE__*/React.forwardRef(function (props, ref) {
   var _props$text = props.text,
@@ -42,7 +43,8 @@ export var Composer = /*#__PURE__*/React.forwardRef(function (props, ref) {
     onToolbarClick = props.onToolbarClick,
     rightAction = props.rightAction,
     inputOptions = props.inputOptions,
-    btnColor = props.btnColor;
+    btnColor = props.btnColor,
+    refreshLabel = props.refreshLabel;
   var _useState = useState(initialText),
     _useState2 = _slicedToArray(_useState, 2),
     text = _useState2[0],
@@ -246,9 +248,14 @@ export var Composer = /*#__PURE__*/React.forwardRef(function (props, ref) {
       disabled: !text || disableSend
     })));
   }
+  console.log("holai", {
+    refreshLabel: refreshLabel
+  });
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     className: "Composer"
-  }, recorder.canRecord && /*#__PURE__*/React.createElement(Action, {
+  }, /*#__PURE__*/React.createElement(LeftAction, {
+    refreshLabel: refreshLabel
+  }), recorder.canRecord && /*#__PURE__*/React.createElement(Action, {
     className: "Composer-inputTypeBtn",
     "data-icon": inputTypeIcon,
     icon: inputTypeIcon,

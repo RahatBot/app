@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ComponentsContext = void 0;
 var _react = _interopRequireDefault(require("react"));
-var ComponentsContext = /*#__PURE__*/_react.default.createContext({
+var ComponentsContext = exports.ComponentsContext = /*#__PURE__*/_react.default.createContext({
   addComponent: function addComponent() {},
   hasComponent: function hasComponent() {
     return false;
@@ -15,4 +15,3 @@ var ComponentsContext = /*#__PURE__*/_react.default.createContext({
     return null;
   }
 });
-exports.ComponentsContext = ComponentsContext;

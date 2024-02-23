@@ -24,15 +24,12 @@ var getFormat = function getFormat(date) {
   if (diff < 0) {
     return 'LT'; // 今天
   }
-
   if (diff < MS_A_DAY) {
     return 'YT'; // 昨天
   }
-
   if (diff < MS_A_WEEK) {
     return 'WT'; // 这周
   }
-
   return 'lll';
 };
 function formatDate(date, locale) {

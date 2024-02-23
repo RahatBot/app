@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["as", "className", "color", "children"];
-var Tag = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var Tag = exports.Tag = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var _props$as = props.as,
     Element = _props$as === void 0 ? 'span' : _props$as,
     className = props.className,
@@ -22,4 +22,3 @@ var Tag = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     ref: ref
   }, other), children);
 });
-exports.Tag = Tag;

@@ -30,15 +30,12 @@ var getFormat = function getFormat(date) {
   if (diff < 0) {
     return 'LT'; // 今天
   }
-
   if (diff < MS_A_DAY) {
     return 'YT'; // 昨天
   }
-
   if (diff < MS_A_WEEK) {
     return 'WT'; // 这周
   }
-
   return 'lll';
 };
 function formatDate(date, locale) {
@@ -56,5 +53,4 @@ function formatDate(date, locale) {
     return dates[match];
   });
 }
-var _default = formatDate;
-exports.default = _default;
+var _default = exports.default = formatDate;

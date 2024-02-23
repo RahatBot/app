@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["as", "className", "align", "breakWord", "truncate", "children"];
-var Text = function Text(props) {
+var Text = exports.Text = function Text(props) {
   var _props$as = props.as,
     Element = _props$as === void 0 ? 'div' : _props$as,
     className = props.className,
@@ -33,4 +33,3 @@ var Text = function Text(props) {
     style: style
   }, other), children);
 };
-exports.Text = Text;

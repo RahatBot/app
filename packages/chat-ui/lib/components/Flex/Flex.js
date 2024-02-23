@@ -33,7 +33,7 @@ var mapAlign = {
   'flex-end': 'Flex--ai-fe',
   center: 'Flex--ai-c'
 };
-var Flex = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var Flex = exports.Flex = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var _props$as = props.as,
     Element = _props$as === void 0 ? 'div' : _props$as,
     className = props.className,
@@ -57,4 +57,3 @@ var Flex = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     ref: ref
   }, other), children);
 });
-exports.Flex = Flex;

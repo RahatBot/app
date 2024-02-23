@@ -14,7 +14,7 @@ var _excluded = ["className", "label", "color", "variant", "size", "icon", "load
 function composeClass(type) {
   return type && "Btn--".concat(type);
 }
-var Button = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var Button = exports.Button = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var className = props.className,
     label = props.label,
     color = props.color,
@@ -53,4 +53,3 @@ var Button = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     spin: loading
   })), label || children);
 });
-exports.Button = Button;

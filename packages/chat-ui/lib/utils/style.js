@@ -5,13 +5,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.setTransition = exports.setTransform = void 0;
 /* eslint-disable no-param-reassign */
-var setTransform = function setTransform(el, value) {
+var setTransform = exports.setTransform = function setTransform(el, value) {
   el.style.transform = value;
   el.style.webkitTransform = value;
 };
-exports.setTransform = setTransform;
-var setTransition = function setTransition(el, value) {
+var setTransition = exports.setTransition = function setTransition(el, value) {
   el.style.transition = value;
   el.style.webkitTransition = value;
 };
-exports.setTransition = setTransition;

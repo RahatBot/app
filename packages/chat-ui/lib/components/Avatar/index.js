@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.Avatar = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
-var Avatar = function Avatar(props) {
+var Avatar = exports.Avatar = function Avatar(props) {
   var className = props.className,
     src = props.src,
     alt = props.alt,
@@ -26,4 +26,3 @@ var Avatar = function Avatar(props) {
     alt: alt
   }) : children);
 };
-exports.Avatar = Avatar;

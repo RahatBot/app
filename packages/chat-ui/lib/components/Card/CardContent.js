@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["className", "children"];
-var CardContent = function CardContent(props) {
+var CardContent = exports.CardContent = function CardContent(props) {
   var className = props.className,
     children = props.children,
     other = (0, _objectWithoutProperties2.default)(props, _excluded);
@@ -18,4 +18,3 @@ var CardContent = function CardContent(props) {
     className: (0, _clsx.default)('CardContent', className)
   }, other), children);
 };
-exports.CardContent = CardContent;

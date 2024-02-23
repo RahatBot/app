@@ -12,7 +12,7 @@ var _clsx = _interopRequireDefault(require("clsx"));
 var _dompurify = _interopRequireDefault(require("dompurify"));
 require("./configDOMPurify");
 var _excluded = ["className", "content", "options"];
-var RichText = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
+var RichText = exports.RichText = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
   var className = props.className,
     content = props.content,
     _props$options = props.options,
@@ -29,4 +29,3 @@ var RichText = /*#__PURE__*/_react.default.forwardRef(function (props, ref) {
     ref: ref
   }, other));
 });
-exports.RichText = RichText;

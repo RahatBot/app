@@ -10,9 +10,8 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["className", "theme", "children"];
-var ThemeContext = /*#__PURE__*/_react.default.createContext('');
-exports.ThemeContext = ThemeContext;
-var Form = function Form(props) {
+var ThemeContext = exports.ThemeContext = /*#__PURE__*/_react.default.createContext('');
+var Form = exports.Form = function Form(props) {
   var className = props.className,
     _props$theme = props.theme,
     theme = _props$theme === void 0 ? '' : _props$theme,
@@ -26,4 +25,3 @@ var Form = function Form(props) {
     }, className)
   }, other), children));
 };
-exports.Form = Form;

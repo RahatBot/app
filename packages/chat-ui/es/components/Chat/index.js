@@ -51,6 +51,8 @@ export var Chat = /*#__PURE__*/React.forwardRef(function (props, ref) {
     onToolbarClick = props.onToolbarClick,
     onAccessoryToggle = props.onAccessoryToggle,
     rightAction = props.rightAction,
+    LeftAction = props.LeftAction,
+    refreshLabel = props.refreshLabel,
     _props$Composer = props.Composer,
     Composer = _props$Composer === void 0 ? DComposer : _props$Composer;
   function handleInputFocus(e) {
@@ -126,6 +128,8 @@ export var Chat = /*#__PURE__*/React.forwardRef(function (props, ref) {
     disableSend: disableSend,
     btnColor: btnColor,
     onImageSend: onImageSend,
-    rightAction: rightAction
+    rightAction: rightAction,
+    LeftAction: LeftAction,
+    refreshLabel: refreshLabel
   }))));
 });

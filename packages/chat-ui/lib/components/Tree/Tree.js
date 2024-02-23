@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.Tree = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
-var Tree = function Tree(props) {
+var Tree = exports.Tree = function Tree(props) {
   var className = props.className,
     children = props.children;
   return /*#__PURE__*/_react.default.createElement("div", {
@@ -15,4 +15,3 @@ var Tree = function Tree(props) {
     role: "tree"
   }, children);
 };
-exports.Tree = Tree;

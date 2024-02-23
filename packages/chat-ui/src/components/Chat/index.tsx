@@ -190,6 +190,8 @@ export const Chat = React.forwardRef<HTMLDivElement, ChatProps>((props, ref) => 
     onToolbarClick,
     onAccessoryToggle,
     rightAction,
+    LeftAction,
+    refreshLabel,
     Composer = DComposer,
   } = props;
 
@@ -241,7 +243,7 @@ export const Chat = React.forwardRef<HTMLDivElement, ChatProps>((props, ref) => 
               onScroll={onQuickReplyScroll}
             />
           )}
-          
+        
          <Composer
             wideBreakpoint={wideBreakpoint}
             ref={composerRef}
@@ -265,6 +267,8 @@ export const Chat = React.forwardRef<HTMLDivElement, ChatProps>((props, ref) => 
             btnColor={btnColor}
             onImageSend={onImageSend}
             rightAction={rightAction}
+            LeftAction={LeftAction}
+            refreshLabel={refreshLabel}
           />
         </div>
       </div>

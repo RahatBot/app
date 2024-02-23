@@ -9,7 +9,7 @@ var _extends2 = _interopRequireDefault(require("@babel/runtime/helpers/extends")
 var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/helpers/objectWithoutProperties"));
 var _react = _interopRequireDefault(require("react"));
 var _excluded = ["type", "content", "children"];
-var Bubble = function Bubble(props) {
+var Bubble = exports.Bubble = function Bubble(props) {
   var _props$type = props.type,
     type = _props$type === void 0 ? 'text' : _props$type,
     content = props.content,
@@ -20,4 +20,3 @@ var Bubble = function Bubble(props) {
     "data-type": type
   }, other), content && /*#__PURE__*/_react.default.createElement("p", null, content), children);
 };
-exports.Bubble = Bubble;

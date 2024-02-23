@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.ToolbarItem = void 0;
 var _react = _interopRequireDefault(require("react"));
 var _Action = require("./Action");
-var ToolbarItem = function ToolbarItem(props) {
+var ToolbarItem = exports.ToolbarItem = function ToolbarItem(props) {
   var item = props.item,
     onClick = props.onClick;
   return /*#__PURE__*/_react.default.createElement(_Action.Action, {
@@ -19,4 +19,3 @@ var ToolbarItem = function ToolbarItem(props) {
     onClick: onClick
   });
 };
-exports.ToolbarItem = ToolbarItem;

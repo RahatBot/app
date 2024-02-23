@@ -10,7 +10,7 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["className", "title", "subtitle", "center", "children"];
-var CardTitle = function CardTitle(props) {
+var CardTitle = exports.CardTitle = function CardTitle(props) {
   var className = props.className,
     title = props.title,
     subtitle = props.subtitle,
@@ -29,4 +29,3 @@ var CardTitle = function CardTitle(props) {
     className: "CardTitle-subtitle"
   }, subtitle), children && typeof children !== 'string' && children);
 };
-exports.CardTitle = CardTitle;

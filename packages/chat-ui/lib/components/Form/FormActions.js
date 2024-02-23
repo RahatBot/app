@@ -10,11 +10,10 @@ var _objectWithoutProperties2 = _interopRequireDefault(require("@babel/runtime/h
 var _react = _interopRequireDefault(require("react"));
 var _clsx = _interopRequireDefault(require("clsx"));
 var _excluded = ["children"];
-var FormActions = function FormActions(props) {
+var FormActions = exports.FormActions = function FormActions(props) {
   var children = props.children,
     other = (0, _objectWithoutProperties2.default)(props, _excluded);
   return /*#__PURE__*/_react.default.createElement("div", (0, _extends2.default)({
     className: (0, _clsx.default)('FormActions')
   }, other), children);
 };
-exports.FormActions = FormActions;
