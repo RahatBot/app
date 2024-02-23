@@ -62,6 +62,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
 
   const showDisasterOptions = useCallback(
     (lang: string) => {
+      context?.setNewConversationId(uuidv4());
       const disasterString =
         lang === "hi"
         ? "सामान्य आपदा,कोरोना वायरस,भूकंप,बाढ़,आग,लू,आतंकी हमला,गड़गड़ाहट"
@@ -89,7 +90,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
       context?.setMessages((prev: any) => [...prev, ...options]);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [context?.setMessages,t]
+    [context?.setMessages,t,context?.setNewConversationId]
   );
 
   

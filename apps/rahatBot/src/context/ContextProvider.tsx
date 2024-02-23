@@ -68,8 +68,8 @@ const ContextProvider: FC<{
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [clickedAudioUrl, setClickedAudioUrl] = useState<string | null>(null);
   const [currentQuery, setCurrentQuery] = useState("");
-const [activeAudioId, setActiveAudioId] = useState(null)
-  
+  const [activeAudioId, setActiveAudioId] = useState(null)
+   const [newConversationId,setNewConversationId]=useState(uuidv4());
   useEffect(() => {
     if (localStorage.getItem("locale")) {
       const disasterString =
@@ -531,6 +531,7 @@ const [activeAudioId, setActiveAudioId] = useState(null)
               headers: {
                 "Content-Type": "application/json",
                 "user-id": localStorage.getItem("userID"),
+                "Conversation-Id" : newConversationId,
               },
             }
           );
@@ -566,7 +567,7 @@ const [activeAudioId, setActiveAudioId] = useState(null)
         }
       }
     },
-    [currentUser?.id, locale, onMessageReceived]
+    [currentUser?.id, locale, onMessageReceived,newConversationId]
   );
 
   const fetchIsDown = useCallback(async () => {
@@ -662,7 +663,7 @@ const [activeAudioId, setActiveAudioId] = useState(null)
       clickedAudioUrl,
       audioPlaying,
       currentQuery,
-      setCurrentQuery,activeAudioId, setActiveAudioId
+      setCurrentQuery,activeAudioId, setActiveAudioId,newConversationId,setNewConversationId
     }),
     [activeAudioId, setActiveAudioId,
       currentQuery,
@@ -714,7 +715,7 @@ const [activeAudioId, setActiveAudioId] = useState(null)
       playAudio,
       ttsLoader,
       clickedAudioUrl,
-      audioPlaying,
+      audioPlaying,newConversationId,setNewConversationId
     ]
   );
 
