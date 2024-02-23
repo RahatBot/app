@@ -40,7 +40,7 @@ const Home: NextPage = () => {
         <div
           id="chatUI"
           style={{
-            visibility: context?.showPdf ? "hidden" : "visible",
+            visibility: "visible",
             position: "fixed",
             top: "0",
             bottom: "0",

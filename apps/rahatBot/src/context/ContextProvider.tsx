@@ -58,10 +58,7 @@ const ContextProvider: FC<{
   const audioRef = useRef(null);
   const [currentPdfId, setCurrentPdfId] = useState("");
   const [keyword, setKeyword] = useState();
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    cookie["access_token"] && localStorage.getItem("userID")
-  );
-  const [showPdf, setShowPdf] = useState(false);
+ 
   const [conversations, setConversations] = useState([]);
   const [audioElement, setAudioElement] = useState(null);
   const [ttsLoader, setTtsLoader] = useState(false);
@@ -652,10 +649,6 @@ const ContextProvider: FC<{
       setCurrentPdfId,
       keyword,
       setKeyword,
-      isLoggedIn,
-      setIsLoggedIn,
-      showPdf,
-      setShowPdf,
       getConversations,
       conversations,
       playAudio,
@@ -706,10 +699,6 @@ const ContextProvider: FC<{
       setCurrentPdfId,
       keyword,
       setKeyword,
-      isLoggedIn,
-      setIsLoggedIn,
-      showPdf,
-      setShowPdf,
       getConversations,
       conversations,
       playAudio,

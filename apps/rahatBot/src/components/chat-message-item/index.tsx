@@ -452,8 +452,9 @@ console.log("shriram:",{rr:content?.text})
               </div>
             </div>
           )}
-          {content?.data?.position === "left" &&
-            content?.data?.flowEnd === "true" && (
+          
+          {content?.data?.position === "left" && (
+            // content?.data?.flowEnd === "true" && (
               <div className={styles.reloadButton} onClick={newChatHandler}>
                 <Image src={reloadIcon} width={25} height={25} alt="" />
               </div>
