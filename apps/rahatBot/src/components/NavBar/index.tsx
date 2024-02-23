@@ -35,9 +35,11 @@ function NavBar() {
   const toggleLanguage = React.useCallback(
     (newLanguage: string) => () => {
       if (newLanguage === context?.locale) return;
-      localStorage.setItem('locale', newLanguage);
+      const message = context?.locale === 'hi' ? "भाषा बटन को टॉगल करने से भाषा बदल जाएगी और वर्तमान सत्र पुनः आरंभ हो जाएगा" :"Toggling the language button will change language and restart the current session"
+      if(window?.confirm(message))
+      {localStorage.setItem('locale', newLanguage);
       context?.setLocale(newLanguage);
-      setIsEngActive((prev) => (prev === true ? false : true));
+      setIsEngActive((prev) => (prev === true ? false : true));}
     },
     [context]
   );
