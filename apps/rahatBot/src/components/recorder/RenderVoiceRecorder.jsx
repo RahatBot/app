@@ -79,6 +79,7 @@ const RenderVoiceRecorder = ({ setInputMsg }) => {
           headers: {
             'Content-Type': 'application/json',
             'user-id': localStorage.getItem('userID'),
+            'Conversation-id': context?.newConversationId
           },
         }
       );
