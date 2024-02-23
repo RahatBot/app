@@ -358,7 +358,7 @@ console.log("shriram:",{rr:content?.text})
                 }}
               >
            
-           {content?.text}
+           {  content?.text.replace(/-/g," ") }
              
           
               </Markdown>
