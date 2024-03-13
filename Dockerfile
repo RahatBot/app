@@ -1,40 +1,40 @@
+# Stage 1: Building the application
+FROM node:16-alpine AS builder
 
-#get the latest alpine image from node registry
-FROM node:18-alpine AS dependencies
-# RUN npm i -g yarn
-#set the working directory
+# Set the working directory
 WORKDIR /app
 
-#copy the package and package lock files
-#from local to container work directory /app
-COPY package.json /app/
-COPY package-lock.json /app/
+# Copy package.json and package-lock.json (or yarn.lock) files
+COPY package.json package-lock.json ./
 
-#Run command npm install to install packages
-RUN npm install
-
-#copy all the folder contents from local to container & build
-FROM node:18-alpine as builder
-
+# Install dependencies
+RUN npm install --legacy-peer-deps
 ARG NEXT_PUBLIC_BASE_URL
 ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
-
-
-WORKDIR /app
+# Copy the rest of your application's source code
 COPY . .
-COPY --from=dependencies /app/node_modules ./node_modules
+
+# Build your Next.js application
 RUN npm run build
 
-#specify env variables at runtime
-FROM node:18-alpine as runner
+# Stage 2: Running the application in production
+FROM node:16-alpine AS runner
+
+# Set the working directory
 WORKDIR /app
 
-# If you are using a custom next.config.js file, uncomment this line.
+# If there's a potential issue with overwriting directories, ensure clean slate (Use with caution)
+# RUN rm -rf .next public node_modules
+
+# Copy the build artifacts from the builder stage
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
+# Expose the port your app runs on
 EXPOSE 3000
+
+# Set the command to run your app
 CMD ["npm", "start"]

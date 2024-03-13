@@ -75,3 +75,8 @@ Below are the designs of how output screens will look like. For more detailed vi
 
 
 We really like contributions in several forms, see [CONTRIBUTING.md](CONTRIBUTING.md)
+
+
+
+ARG NEXT_PUBLIC_BASE_URL
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
