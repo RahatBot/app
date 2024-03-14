@@ -65,7 +65,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
       context?.setNewConversationId(uuidv4());
       const disasterString =
         lang === "hi"
-        ? "सामान्य आपदा,कोरोना वायरस,भूकंप,बाढ़,आग,लू,आतंकी हमला,गड़गड़ाहट"
+        ? "सामान्य आपदा,कोरोना वायरस,भूकंप,बाढ़,आग,सनस्ट्रोक,आतंकी हमला,गड़गड़ाहट"
         : "General Disaster,Coronavirus,Earthquake,Flood,Fire,Sunstroke,Terrorist Attack,Thunder";
       const options = [
         {
