@@ -1,4 +1,4 @@
-"use client";
+'use client'
 import {
   FC,
   ReactElement,
@@ -7,149 +7,190 @@ import {
   useMemo,
   useState,
   useRef,
-} from "react";
-import { AppContext } from ".";
-import _ from "underscore";
-import { v4 as uuidv4 } from "uuid";
-import { UserType } from "../types";
-import { IntlProvider } from "react-intl";
-import { useLocalization } from "../hooks";
-import toast from "react-hot-toast";
-import axios from "axios";
-import { useCookies } from "react-cookie";
+} from 'react'
+import { AppContext } from '.'
+import _ from 'underscore'
+import { v4 as uuidv4 } from 'uuid'
+import { UserType } from '../types'
+import { IntlProvider } from 'react-intl'
+import { useLocalization } from '../hooks'
+import toast from 'react-hot-toast'
+import axios from 'axios'
+import { useCookies } from 'react-cookie'
+import { UCI } from 'socket-package'
+import { XMessage } from '@samagra-x/xmessage'
 
 function loadMessages(locale: string) {
   switch (locale) {
-    case "en":
-      return import("../../lang/en.json");
-    case "hi":
-      return import("../../lang/hi.json");
+    case 'en':
+      return import('../../lang/en.json')
+    case 'hi':
+      return import('../../lang/hi.json')
     default:
-      return import("../../lang/en.json");
+      return import('../../lang/en.json')
   }
 }
 
 const ContextProvider: FC<{
-  locale: any;
-  localeMsgs: any;
-  setLocale: any;
-  children: ReactElement;
+  locale: any
+  localeMsgs: any
+  setLocale: any
+  children: ReactElement
 }> = ({ locale, children, localeMsgs, setLocale }) => {
-  const t = useLocalization();
-  const [collapsed, setCollapsed] = useState(false); // LeftSide menu bar
-  const [pdfList, setPdfList] = useState<any[]>([]);
-  const [selectedPdf, setSelectedPdf] = useState<any>(null);
-  const [uploadingPdf, setUploadingPdf] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [processingPdf, setProcessingPdf] = useState(false); // Used to show spinner while API req is on pending
-  const [users, setUsers] = useState<UserType[]>([]);
-  const [currentUser, setCurrentUser] = useState<UserType>();
-  const [loading, setLoading] = useState(false);
-  const [isMsgReceiving, setIsMsgReceiving] = useState(false);
-  const [messages, setMessages] = useState<Array<any>>([]);
+  const t = useLocalization()
+  const [collapsed, setCollapsed] = useState(false) // LeftSide menu bar
+  const [pdfList, setPdfList] = useState<any[]>([])
+  const [selectedPdf, setSelectedPdf] = useState<any>(null)
+  const [uploadingPdf, setUploadingPdf] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [processingPdf, setProcessingPdf] = useState(false) // Used to show spinner while API req is on pending
+  const [users, setUsers] = useState<UserType[]>([])
+  const [currentUser, setCurrentUser] = useState<UserType>()
+  const [loading, setLoading] = useState(false)
+  const [isMsgReceiving, setIsMsgReceiving] = useState(false)
+  const [messages, setMessages] = useState<Array<any>>([])
   const [conversationId, setConversationId] = useState<string | null>(
-    sessionStorage.getItem("conversationId")
-  );
-  const [isDown, setIsDown] = useState(true);
-  const [showDialerPopup, setShowDialerPopup] = useState(false);
-  const [showPopUp, setShowPopUp] = useState(false);
-  const [cookie, setCookie, removeCookie] = useCookies();
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-  const audioRef = useRef(null);
-  const [currentPdfId, setCurrentPdfId] = useState("");
-  const [keyword, setKeyword] = useState();
- 
-  const [conversations, setConversations] = useState([]);
-  const [audioElement, setAudioElement] = useState(null);
-  const [ttsLoader, setTtsLoader] = useState(false);
-  const [audioPlaying, setAudioPlaying] = useState(false);
-  const [clickedAudioUrl, setClickedAudioUrl] = useState<string | null>(null);
-  const [currentQuery, setCurrentQuery] = useState("");
+    sessionStorage.getItem('conversationId')
+  )
+  const [isDown, setIsDown] = useState(true)
+  const [showDialerPopup, setShowDialerPopup] = useState(false)
+  const [showPopUp, setShowPopUp] = useState(false)
+  const [cookie, setCookie, removeCookie] = useCookies()
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false)
+  const audioRef = useRef(null)
+  const [currentPdfId, setCurrentPdfId] = useState('')
+  const [keyword, setKeyword] = useState()
+
+  const [conversations, setConversations] = useState([])
+  const [audioElement, setAudioElement] = useState(null)
+  const [ttsLoader, setTtsLoader] = useState(false)
+  const [audioPlaying, setAudioPlaying] = useState(false)
+  const [clickedAudioUrl, setClickedAudioUrl] = useState<string | null>(null)
+  const [currentQuery, setCurrentQuery] = useState('')
   const [activeAudioId, setActiveAudioId] = useState(null)
-   const [newConversationId,setNewConversationId]=useState(uuidv4());
+  const [newConversationId, setNewConversationId] = useState(uuidv4())
+  const [newSocket, setNewSocket] = useState<any>()
+
+  const URL = process.env.NEXT_PUBLIC_SOCKET_URL || ''
+  const UserId = localStorage.getItem('userID')
+
   useEffect(() => {
-    if (localStorage.getItem("locale")) {
+    if (localStorage.getItem('locale')) {
       const disasterString =
-        localStorage.getItem("locale") === "hi"
-        ? "सामान्य आपदा,कोरोना वायरस,भूकंप,बाढ़,आग,सनस्ट्रोक,आतंकी हमला,गड़गड़ाहट"
-        : "General Disaster,Coronavirus,Earthquake,Flood,Fire,Sunstroke,Terrorist Attack,Thunder";
+        localStorage.getItem('locale') === 'hi'
+          ? 'सामान्य आपदा,कोरोना वायरस,भूकंप,बाढ़,आग,सनस्ट्रोक,आतंकी हमला,गड़गड़ाहट'
+          : 'General Disaster,Coronavirus,Earthquake,Flood,Fire,Sunstroke,Terrorist Attack,Thunder'
       const options = [
         {
           text: t('label.disasterList'),
-          position: "left",
+          position: 'left',
           repliedTimestamp: new Date().valueOf(),
           exampleOptions: false,
           payload: {
-            buttonChoices: disasterString
-              .split(",")
-              .map((item) => ({
-                key: item,
-                text: item,
-                backmenu: false,
-                hasFullWidth: true,
-              })),
-          text: t('label.disasterList'),
+            buttonChoices: disasterString.split(',').map((item) => ({
+              key: item,
+              text: item,
+              backmenu: false,
+              hasFullWidth: true,
+            })),
+            text: t('label.disasterList'),
           },
         },
-      ];
-      setMessages(options);
+      ]
+      setMessages(options)
     } else {
       const initialMsg = [
         {
-          text: "Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language",
-          position: "left",
+          text: 'Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language',
+          position: 'left',
           repliedTimestamp: new Date().valueOf(),
           exampleOptions: true,
           payload: {
             buttonChoices: [
               {
-                key: "hi",
-                text: "हिंदी",
+                key: 'hi',
+                text: 'हिंदी',
                 backmenu: false,
               },
               {
-                key: "en",
-                text: "English",
+                key: 'en',
+                text: 'English',
                 backmenu: false,
               },
             ],
-            text: "Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language ",
+            text: 'Welcome to Rahat Bot. You can ask me any questions regarding emergencies. You may select your preferred language ',
           },
           isIgnore: false,
         },
-      ];
-      setMessages(initialMsg);
+      ]
+      setMessages(initialMsg)
     }
-  }, [t]);
+  }, [t])
+
+  useEffect(() => {
+    if (UserId) {
+      setNewSocket(
+        new UCI(
+          URL,
+          {
+            transportOptions: {
+              polling: {
+                extraHeaders: {
+                  // Authorization: `Bearer ${localStorage.getItem('auth')}`,
+                  channel: 'akai',
+                },
+              },
+            },
+            path: process.env.NEXT_PUBLIC_SOCKET_PATH || '',
+            query: {
+              deviceId: UserId,
+            },
+            autoConnect: false,
+            transports: ['polling', 'websocket'],
+            upgrade: true,
+          },
+          onMessageReceived
+        )
+      )
+    }
+    function cleanup() {
+      if (newSocket)
+        newSocket.onDisconnect(() => {
+          console.log('Socket disconnected')
+        })
+    }
+    return cleanup
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [UserId])
+
   async function base64WavToPlayableLink(base64Wav: string): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
         // Convert Base64 to binary
-        const binaryWav = atob(base64Wav);
+        const binaryWav = atob(base64Wav)
 
         // Convert binary to ArrayBuffer
-        const arrayBuffer = new ArrayBuffer(binaryWav.length);
-        const view = new Uint8Array(arrayBuffer);
+        const arrayBuffer = new ArrayBuffer(binaryWav.length)
+        const view = new Uint8Array(arrayBuffer)
         for (let i = 0; i < binaryWav.length; i++) {
-          view[i] = binaryWav.charCodeAt(i);
+          view[i] = binaryWav.charCodeAt(i)
         }
 
         // Create a Blob from ArrayBuffer
-        const blob = new Blob([arrayBuffer], { type: "audio/wav" });
+        const blob = new Blob([arrayBuffer], { type: 'audio/wav' })
 
         // Create an object URL from Blob
-        const url = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob)
 
-        resolve(url);
+        resolve(url)
       } catch (error) {
-        reject(error);
+        reject(error)
       }
-    });
+    })
   }
 
   // const playAudio = useCallback(async (url: string, content: any) => {
-    
-    
+
   //     if (!url) {
   //       console.error('Audio URL not provided.');
   //       return;
@@ -227,114 +268,110 @@ const ContextProvider: FC<{
   //         setClickedAudioUrl(null);
   //         console.error('Error playing audio:', error);
   //       });
-    
+
   // }, [audioElement]);
 
-  const playAudio = useCallback(async(url: string, content: any) => {
-    console.log("holai:",{content,url})
+  const playAudio = useCallback(
+    async (url: string, content: any) => {
+      console.log('holai:', { content, url })
       if (!url) {
-        console.error("Audio URL not provided.");
-        console.log("holai 1");
-        return;
+        console.error('Audio URL not provided.')
+        console.log('holai 1')
+        return
       }
-    url = await base64WavToPlayableLink(url);
-    console.log("holai:",{url,audioElement})
+      url = await base64WavToPlayableLink(url)
+      console.log('holai:', { url, audioElement })
       if (audioElement) {
-        console.log("holai 2",{audioElement});
-       
+        console.log('holai 2', { audioElement })
+
         //@ts-ignore
-        if(audioElement.paused){
+        if (audioElement.paused) {
           //@ts-ignore
-         audioElement.play();
-         setAudioPlaying(true);
-         return;
-       }
+          audioElement.play()
+          setAudioPlaying(true)
+          return
+        }
         //@ts-ignore
-        if(!audioElement.ended){
+        if (!audioElement.ended) {
           //@ts-ignore
-         audioElement.pause();
-         setAudioElement(null)
-         setAudioPlaying(false);
-         return;
-       }
+          audioElement.pause()
+          setAudioElement(null)
+          setAudioPlaying(false)
+          return
+        }
         //@ts-ignore
         if (audioElement.src === url) {
-
           // If the same URL is provided and audio is paused, resume playback
           //@ts-ignore
           if (audioElement.paused) {
-            console.log("holai 4");
-            setClickedAudioUrl(url);
-            setTtsLoader(true);
+            console.log('holai 4')
+            setClickedAudioUrl(url)
+            setTtsLoader(true)
             audioElement
               //@ts-ignore
               .play()
               .then(() => {
-                setTtsLoader(false);
-                setAudioPlaying(true);
-                console.log("Resumed audio:", url);
+                setTtsLoader(false)
+                setAudioPlaying(true)
+                console.log('Resumed audio:', url)
               })
               //@ts-ignore
               .catch((error) => {
-                setAudioPlaying(false);
-                setTtsLoader(false);
-                setAudioElement(null);
-                setClickedAudioUrl(null);
-                console.error("Error resuming audio:", error);
-              });
+                setAudioPlaying(false)
+                setTtsLoader(false)
+                setAudioElement(null)
+                setClickedAudioUrl(null)
+                console.error('Error resuming audio:', error)
+              })
           } else {
-  
             // Pause the current audio if it's playing
             //@ts-ignore
-            audioElement.pause();
-            setAudioPlaying(false);
-            console.log("Paused audio:", url);
+            audioElement.pause()
+            setAudioPlaying(false)
+            console.log('Paused audio:', url)
           }
-          return;
+          return
         } else {
-         
           // Pause the older audio if it's playing
           //@ts-ignore
-          audioElement.pause();
-          if(isAudioPlaying){
-            setAudioPlaying(false);
+          audioElement.pause()
+          if (isAudioPlaying) {
+            setAudioPlaying(false)
             return
           }
-          
-          
         }
       }
-   
-      setClickedAudioUrl(url);
-      setTtsLoader(true);
-      const audio = new Audio(url);
-      audio.playbackRate = 1.15;
-      audio.addEventListener("ended", () => {
-        setAudioElement(null);
-        setAudioPlaying(false);
-      });
-      
-     
+
+      setClickedAudioUrl(url)
+      setTtsLoader(true)
+      const audio = new Audio(url)
+      audio.playbackRate = 1.15
+      audio.addEventListener('ended', () => {
+        setAudioElement(null)
+        setAudioPlaying(false)
+      })
+
       audio
         .play()
         .then(() => {
-          console.log("holai 8")
-          setTtsLoader(false);
-          setAudioPlaying(true);
-          console.log("Audio played:", url);
+          console.log('holai 8')
+          setTtsLoader(false)
+          setAudioPlaying(true)
+          console.log('Audio played:', url)
           // Update the current audio to the new audio element
           //@ts-ignore
-          setAudioElement(audio);
+          setAudioElement(audio)
         })
         .catch((error) => {
-          setAudioPlaying(false);
-          setTtsLoader(false);
-          setAudioElement(null);
-          setClickedAudioUrl(null);
-          console.error("Error playing audio:", error);
-        });
-    
-  }, [audioElement, isAudioPlaying]);
+          setAudioPlaying(false)
+          setTtsLoader(false)
+          setAudioElement(null)
+          setClickedAudioUrl(null)
+          console.error('Error playing audio:', error)
+        })
+    },
+    [audioElement, isAudioPlaying]
+  )
 
   const updateMsgState = useCallback(
     ({
@@ -342,27 +379,27 @@ const ContextProvider: FC<{
       msg,
       media,
     }: {
-      user: { name: string; id: string };
+      user: { name: string; id: string }
       msg: {
         content: {
-          title: string;
-          choices: any;
-          audio_url: string;
-          flowEnd: string;
-        };
-        messageId: string;
-      };
-      media: any;
+          title: string
+          choices: any
+          audio_url: string
+          flowEnd: string
+        }
+        messageId: string
+      }
+      media: any
     }) => {
-      console.log("hie", msg);
-      if (msg.content.title !== "") {
+      console.log('hie', msg)
+      if (msg.content.title !== '') {
         const newMsg = {
           username: user?.name,
           text: msg.content.title,
           choices: msg.content.choices,
           audio_url: msg.content.audio_url,
           flowEnd: msg.content.flowEnd,
-          position: "left",
+          position: 'left',
           id: user?.id,
           botUuid: user?.id,
           reaction: 0,
@@ -371,46 +408,47 @@ const ContextProvider: FC<{
           conversationId: msg?.content?.conversationId,
           sentTimestamp: Date.now(),
           ...media,
-        };
+        }
 
-        console.log("here", msg, conversationId);
+        console.log('here', msg, conversationId)
         //@ts-ignore
         if (conversationId === msg?.content?.conversationId) {
-          console.log("here", newMsg);
-          setMessages((prev: any) => [...prev, newMsg]);
+          console.log('here', newMsg)
+          setMessages((prev: any) => [...prev, newMsg])
         }
       }
     },
     [conversationId]
-  );
+  )
 
-  console.log("erty:", { conversationId });
+  console.log('erty:', { conversationId })
+  console.log('ankit:', { newSocket })
 
   const getConversations = useCallback(() => {
-    if (!cookie["access_token"]) return;
+    if (!cookie['access_token']) return
     axios
       .get(`${process.env.NEXT_PUBLIC_BASE_URL}/user/conversations`, {
         headers: {
-          Authorization: `Bearer ${cookie["access_token"]}`,
+          Authorization: `Bearer ${cookie['access_token']}`,
         },
       })
       .then((res) => {
-        console.log("history", res.data);
+        console.log('history', res.data)
         const sortedConversations = [...res.data].sort((a, b) => {
-          const dateA = new Date(a.updatedAt);
-          const dateB = new Date(b.updatedAt);
+          const dateA = new Date(a.updatedAt)
+          const dateB = new Date(b.updatedAt)
           //@ts-ignore
-          return dateB - dateA;
-        });
+          return dateB - dateA
+        })
 
         //@ts-ignore
-        setConversations(sortedConversations);
+        setConversations(sortedConversations)
       })
       .catch((err) => {
-        console.log(err);
-        toast.error("Could not load your chat history!");
-      });
-  }, [cookie]);
+        console.log(err)
+        toast.error('Could not load your chat history!')
+      })
+  }, [cookie])
 
   // useEffect(() => {
   //   getConversations();
@@ -418,56 +456,56 @@ const ContextProvider: FC<{
 
   const onMessageReceived = useCallback(
     async (msg: any) => {
-      console.log("mssgs:", messages);
-      console.log("#-debug:", { msg });
-      setLoading(false);
-      setIsMsgReceiving(false);
+      console.log('mssgs:', messages)
+      console.log('#-debug:', { msg })
+      setLoading(false)
+      setIsMsgReceiving(false)
       //@ts-ignore
-      const user = JSON.parse(localStorage.getItem("currentUser"));
+      const user = JSON.parse(localStorage.getItem('currentUser'))
 
-      if (msg.content.msg_type.toUpperCase() === "IMAGE") {
+      if (msg.content.msg_type.toUpperCase() === 'IMAGE') {
         updateMsgState({
           user,
           msg,
           media: { imageUrl: msg?.content?.media_url },
-        });
-      } else if (msg.content.msg_type.toUpperCase() === "AUDIO") {
+        })
+      } else if (msg.content.msg_type.toUpperCase() === 'AUDIO') {
         updateMsgState({
           user,
           msg,
           media: { audioUrl: msg?.content?.media_url },
-        });
-      } else if (msg.content.msg_type.toUpperCase() === "VIDEO") {
+        })
+      } else if (msg.content.msg_type.toUpperCase() === 'VIDEO') {
         updateMsgState({
           user,
           msg,
           media: { videoUrl: msg?.content?.media_url },
-        });
+        })
       } else if (
-        msg.content.msg_type.toUpperCase() === "DOCUMENT" ||
-        msg.content.msg_type.toUpperCase() === "FILE"
+        msg.content.msg_type.toUpperCase() === 'DOCUMENT' ||
+        msg.content.msg_type.toUpperCase() === 'FILE'
       ) {
         updateMsgState({
           user,
           msg,
           media: { fileUrl: msg?.content?.media_url },
-        });
-      } else if (msg.content.msg_type.toUpperCase() === "TEXT") {
-        updateMsgState({ user, msg, media: {} });
+        })
+      } else if (msg.content.msg_type.toUpperCase() === 'TEXT') {
+        updateMsgState({ user, msg, media: {} })
       }
     },
     [messages, updateMsgState]
-  );
+  )
 
   const onChangeCurrentUser = useCallback((newUser: UserType) => {
-    setCurrentUser({ ...newUser, active: true });
+    setCurrentUser({ ...newUser, active: true })
     // setMessages([]);
-  }, []);
+  }, [])
 
   //@ts-ignore
   const sendMessage = useCallback(
     async (text: string, media: any) => {
-      console.log("holai:",{text,media})
+      console.log('holai:', { text, media })
       // if (
       //   !localStorage.getItem('userID') ||
       //   !sessionStorage.getItem('conversationId')
@@ -477,28 +515,28 @@ const ContextProvider: FC<{
       //   return;
       // }
       // console.log('mssgs:', messages)
-      setIsMsgReceiving(true);
+      setIsMsgReceiving(true)
 
-      setLoading(true);
+      setLoading(true)
 
       //  console.log('mssgs:',messages)
       if (media) {
-        if (media.mimeType.slice(0, 5) === "image") {
-        } else if (media.mimeType.slice(0, 5) === "audio") {
-        } else if (media.mimeType.slice(0, 5) === "video") {
-        } else if (media.mimeType.slice(0, 11) === "application") {
+        if (media.mimeType.slice(0, 5) === 'image') {
+        } else if (media.mimeType.slice(0, 5) === 'audio') {
+        } else if (media.mimeType.slice(0, 5) === 'video') {
+        } else if (media.mimeType.slice(0, 11) === 'application') {
         } else {
         }
       } else {
-        const msgId = uuidv4();
+        const msgId = uuidv4()
         //console.log('mssgs:',messages)
         //@ts-ignore
         setMessages((prev: any) => [
           ...prev.map((prevMsg: any) => ({ ...prevMsg })),
           {
-            username: localStorage.getItem("userID"),
+            username: localStorage.getItem('userID'),
             text: text,
-            position: "right",
+            position: 'right',
             botUuid: currentUser?.id,
             payload: { text },
             time: Date.now(),
@@ -506,7 +544,7 @@ const ContextProvider: FC<{
             messageId: msgId,
             repliedTimestamp: Date.now(),
           },
-        ]);
+        ])
         // Send the user's message to API
         // const data = {
         //   body: text,
@@ -516,97 +554,131 @@ const ContextProvider: FC<{
         // };
         const data = {
           text: text,
-          media: "",
-          inputLanguage: locale || "en",
-        };
+          media: '',
+          inputLanguage: locale || 'en',
+        }
 
         try {
+          // const messageId = s2tMsgId ? s2tMsgId : uuidv4()
+          const messageId = uuidv4()
+
+          newSocket.sendMessage({
+            payload: {
+              app: process.env.NEXT_PUBLIC_BOT_ID || '',
+              payload: {
+                text: text?.replace('&', '%26')?.replace(/^\s+|\s+$/g, ''),
+                metaData: {
+                  latitude: sessionStorage.getItem('latitude'),
+                  longitude: sessionStorage.getItem('longitude'),
+                  city: sessionStorage.getItem('city'),
+                  state: sessionStorage.getItem('state'),
+                  ip: sessionStorage.getItem('ip'),
+                },
+              },
+              tags: JSON.parse(sessionStorage.getItem('tags') || '[]') || [],
+              from: {
+                userID: localStorage.getItem('userID'),
+              },
+              messageId: {
+                Id: messageId,
+                channelMessageId: sessionStorage.getItem('conversationId'),
+              },
+            } as Partial<XMessage>,
+          })
+          newSocket.addEventListener('message', (event: any) => {
+            // Parse the message data
+            const message = JSON.parse(event.data)
+
+            // Handle the incoming message here
+            console.log('Message from server ankit:', message)
+          })
+
           const response = await axios.post(
             `${process.env.NEXT_PUBLIC_BASE_URL}/prompt`,
             data,
             {
               headers: {
-                "Content-Type": "application/json",
-                "user-id": localStorage.getItem("userID"),
-                "Conversation-Id" : newConversationId,
+                'Content-Type': 'application/json',
+                'user-id': localStorage.getItem('userID'),
+                'Conversation-Id': newConversationId,
               },
             }
-          );
+          )
 
           // Handle response here
-          console.log("hie", response?.data);
+          console.log('hie', response?.data)
           onMessageReceived({
             content: {
               title: response?.data?.text || response?.data?.error,
-              msg_type: "TEXT",
+              msg_type: 'TEXT',
               choices: null,
-              conversationId: sessionStorage.getItem("conversationId"),
-              audio_url: response?.data?.audio?.text || "",
+              conversationId: sessionStorage.getItem('conversationId'),
+              audio_url: response?.data?.audio?.text || '',
               flowEnd: response?.data?.flowEnd,
             },
             messageId: response?.data?.messageId,
-          });
+          })
         } catch (error) {
           // Handle error here
           onMessageReceived({
             content: {
-              title: "Something went wrong. Please try again later.",
-              msg_type: "TEXT",
+              title: 'Something went wrong. Please try again later.',
+              msg_type: 'TEXT',
               choices: null,
-              conversationId: sessionStorage.getItem("conversationId"),
-              audio_url: "",
+              conversationId: sessionStorage.getItem('conversationId'),
+              audio_url: '',
             },
             messageId: msgId,
-          });
-          setIsMsgReceiving(false);
-          setLoading(false);
-          console.log(error);
+          })
+          setIsMsgReceiving(false)
+          setLoading(false)
+          console.log(error)
         }
       }
     },
-    [currentUser?.id, locale, onMessageReceived,newConversationId]
-  );
+    [currentUser?.id, locale, newSocket, onMessageReceived, newConversationId]
+  )
 
   const fetchIsDown = useCallback(async () => {
     try {
       const res = await axios.get(
         `${process.env.NEXT_PUBLIC_BASE_URL}/health/20`
-      );
-      const status = res.data.status;
-      console.log("hie", status);
-      if (status === "OK") {
-        setIsDown(false);
+      )
+      const status = res.data.status
+      console.log('hie', status)
+      if (status === 'OK') {
+        setIsDown(false)
       } else {
-        setIsDown(true);
-        console.log("Server status is not OK");
+        setIsDown(true)
+        console.log('Server status is not OK')
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  }, [setIsDown]);
+  }, [setIsDown])
 
   useEffect(() => {
-    if (isDown) return;
-    let secondTimer: any;
+    if (isDown) return
+    let secondTimer: any
     const timer = setTimeout(() => {
       if (isMsgReceiving && loading) {
-        toast.error(`${t("message.taking_longer")}`);
+        toast.error(`${t('message.taking_longer')}`)
         secondTimer = setTimeout(() => {
           if (isMsgReceiving && loading) {
-            toast.error(`${t("message.retry")}`);
-            setIsMsgReceiving(false);
-            setLoading(false);
-            fetchIsDown();
+            toast.error(`${t('message.retry')}`)
+            setIsMsgReceiving(false)
+            setLoading(false)
+            fetchIsDown()
           }
-        }, 25000);
+        }, 25000)
       }
-    }, 15000);
+    }, 15000)
 
     return () => {
-      clearTimeout(timer);
-      clearTimeout(secondTimer);
-    };
-  }, [fetchIsDown, isDown, isMsgReceiving, loading, t]);
+      clearTimeout(timer)
+      clearTimeout(secondTimer)
+    }
+  }, [fetchIsDown, isDown, isMsgReceiving, loading, t])
 
   const values = useMemo(
     () => ({
@@ -656,9 +728,16 @@ const ContextProvider: FC<{
       clickedAudioUrl,
       audioPlaying,
       currentQuery,
-      setCurrentQuery,activeAudioId, setActiveAudioId,newConversationId,setNewConversationId
+      setCurrentQuery,
+      activeAudioId,
+      setActiveAudioId,
+      newConversationId,
+      setNewConversationId,
+      newSocket,
     }),
-    [activeAudioId, setActiveAudioId,
+    [
+      activeAudioId,
+      setActiveAudioId,
       currentQuery,
       setCurrentQuery,
       locale,
@@ -704,9 +783,12 @@ const ContextProvider: FC<{
       playAudio,
       ttsLoader,
       clickedAudioUrl,
-      audioPlaying,newConversationId,setNewConversationId
+      audioPlaying,
+      newConversationId,
+      setNewConversationId,
+      newSocket,
     ]
-  );
+  )
 
   return (
     //@ts-ignore
@@ -715,26 +797,26 @@ const ContextProvider: FC<{
         {children}
       </IntlProvider>
     </AppContext.Provider>
-  );
-};
+  )
+}
 
 const SSR: FC<{ children: ReactElement }> = ({ children }) => {
-  const [locale, setLocale] = useState("");
+  const [locale, setLocale] = useState('')
   const [localeMsgs, setLocaleMsgs] = useState<Record<string, string> | null>(
     null
-  );
+  )
   useEffect(() => {
-    setLocale(localStorage.getItem("locale") || "en");
-  }, []);
+    setLocale(localStorage.getItem('locale') || 'en')
+  }, [])
 
   useEffect(() => {
     loadMessages(locale).then((res) => {
       //@ts-ignore
-      setLocaleMsgs(res);
-    });
-  }, [locale]);
+      setLocaleMsgs(res)
+    })
+  }, [locale])
 
-  if (typeof window === "undefined") return null;
+  if (typeof window === 'undefined') return null
   return (
     //@ts-ignore
     <IntlProvider locale={locale} messages={localeMsgs}>
@@ -746,6 +828,6 @@ const SSR: FC<{ children: ReactElement }> = ({ children }) => {
         {children}
       </ContextProvider>
     </IntlProvider>
-  );
-};
-export default SSR;
+  )
+}
+export default SSR

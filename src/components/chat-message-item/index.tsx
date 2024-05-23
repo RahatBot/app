@@ -9,8 +9,8 @@ import {
   Typing,
   RichText,
   //@ts-ignore
-} from "rahatbot_chatui";
-import axios from "axios";
+} from 'rahatbot_chatui'
+import axios from 'axios'
 import React, {
   FC,
   ReactElement,
@@ -18,184 +18,198 @@ import React, {
   useContext,
   useEffect,
   useState,
-} from "react";
-import { v4 as uuidv4 } from "uuid";
-import { toast } from "react-hot-toast";
-import Image from "next/image";
-import styles from "./index.module.css";
-import RightIcon from "../../assets/icons/right.jsx";
-import SpeakerIcon from "../../assets/icons/speaker.svg";
-import SpeakerPauseIcon from "../../assets/icons/speakerPause.png";
-import reloadIcon from "../../assets/icons/reload.svg";
-import CopyText from "../../assets/icons/copy-text.svg";
-import MsgThumbsUp from "../../assets/icons/msg-thumbs-up.jsx";
-import MsgThumbsDown from "../../assets/icons/msg-thumbs-down.jsx";
-import { AppContext } from "../../context";
-import { ChatMessageItemPropType } from "../../types";
-import { getFormatedTime } from "../../utils/getUtcTime";
-import { useLocalization } from "../../hooks/useLocalization";
-import { getReactionUrl } from "../../utils/getUrls";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
-import { Button } from "@chakra-ui/react";
-import { useCookies } from "react-cookie";
-import Loader from "../loader";
+} from 'react'
+import { v4 as uuidv4 } from 'uuid'
+import { toast } from 'react-hot-toast'
+import Image from 'next/image'
+import styles from './index.module.css'
+import RightIcon from '../../assets/icons/right.jsx'
+import SpeakerIcon from '../../assets/icons/speaker.svg'
+import SpeakerPauseIcon from '../../assets/icons/speakerPause.png'
+import reloadIcon from '../../assets/icons/reload.svg'
+import CopyText from '../../assets/icons/copy-text.svg'
+import MsgThumbsUp from '../../assets/icons/msg-thumbs-up.jsx'
+import MsgThumbsDown from '../../assets/icons/msg-thumbs-down.jsx'
+import { AppContext } from '../../context'
+import { MessageType, XMessage } from '@samagra-x/xmessage'
+import { ChatMessageItemPropType } from '../../types'
+import { getFormatedTime } from '../../utils/getUtcTime'
+import { useLocalization } from '../../hooks/useLocalization'
+import { getReactionUrl } from '../../utils/getUrls'
+import Markdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
+import { Button } from '@chakra-ui/react'
+import { useCookies } from 'react-cookie'
+import Loader from '../loader'
 
 const getToastMessage = (t: any, reaction: number): string => {
-  if (reaction === 1) return t("toast.reaction_like");
-  return t("toast.reaction_reset");
-};
+  if (reaction === 1) return t('toast.reaction_like')
+  return t('toast.reaction_reset')
+}
 const ChatMessageItem: FC<ChatMessageItemPropType> = ({
   currentUser,
   message,
   onSend,
 }) => {
-  const t = useLocalization();
-  const context = useContext(AppContext);
-  const [reaction, setReaction] = useState(message?.content?.data?.reaction);
-  const [cookies, setCookie, removeCookie] = useCookies(["access_token"]);
+  const t = useLocalization()
+  const context = useContext(AppContext)
+  const [reaction, setReaction] = useState(message?.content?.data?.reaction)
+  const [cookies, setCookie, removeCookie] = useCookies(['access_token'])
 
   useEffect(() => {
-    setReaction(message?.content?.data?.reaction);
-  }, [message?.content?.data?.reaction]);
+    setReaction(message?.content?.data?.reaction)
+  }, [message?.content?.data?.reaction])
 
   const showDisasterOptions = useCallback(
     (lang: string) => {
-      context?.setNewConversationId(uuidv4());
+      context?.setNewConversationId(uuidv4())
       const disasterString =
-        lang === "hi"
-        ? "सामान्य आपदा,कोरोना वायरस,भूकंप,बाढ़,आग,सनस्ट्रोक,आतंकी हमला,गड़गड़ाहट"
-        : "General Disaster,Coronavirus,Earthquake,Flood,Fire,Sunstroke,Terrorist Attack,Thunder";
+        lang === 'hi'
+          ? 'सामान्य आपदा,कोरोना वायरस,भूकंप,बाढ़,आग,सनस्ट्रोक,आतंकी हमला,गड़गड़ाहट'
+          : 'General Disaster,Coronavirus,Earthquake,Flood,Fire,Sunstroke,Terrorist Attack,Thunder'
       const options = [
         {
-        //  text: lang === "hi" ? "आपदा चुनें" : "Select Disaster",
-          text: t('label.disasterList') ,
-          position: "left",
+          //  text: lang === "hi" ? "आपदा चुनें" : "Select Disaster",
+          text: t('label.disasterList'),
+          position: 'left',
           repliedTimestamp: new Date().valueOf(),
           exampleOptions: false,
           payload: {
-            buttonChoices: disasterString
-              .split(",")
-              .map((item) => ({
-                key: item,
-                text: item,
-                backmenu: false,
-                hasFullWidth: true,
-              })),
+            buttonChoices: disasterString.split(',').map((item) => ({
+              key: item,
+              text: item,
+              backmenu: false,
+              hasFullWidth: true,
+            })),
             text: t('label.disasterList'),
           },
         },
-      ];
-      context?.setMessages((prev: any) => [...prev, ...options]);
+      ]
+      context?.setMessages((prev: any) => [...prev, ...options])
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [context?.setMessages,t,context?.setNewConversationId]
-  );
+    [context?.setMessages, t, context?.setNewConversationId]
+  )
 
-  
   const onLikeDislike = useCallback(
     ({ value, msgId }: { value: 0 | 1 | -1; msgId: string }) => {
-      let url = getReactionUrl({ msgId, reaction: value });
+      let url = getReactionUrl({ msgId, reaction: value })
       if (value === -1) {
-        context?.setCurrentQuery(msgId);
-        context?.setShowDialerPopup(true);
+        context?.setCurrentQuery(msgId)
+        context?.setShowDialerPopup(true)
         return
       }
-      axios
-        .get(url, {
-          // headers: {
-          //   authorization: `Bearer ${cookies.access_token}`,
-          // },
+      if (value == 1) {
+        // axios
+        // .get(url, {
+        //   // headers: {
+        //   //   authorization: `Bearer ${cookies.access_token}`,
+        //   // },
+        // })
+        // .then((res: any) => {
+        //   // if (value === -1) {
+        //   //   context?.setCurrentQuery(msgId);
+        //   //   context?.setShowDialerPopup(true);
+        //   // }
+
+        //   toast.success(`${getToastMessage(t, value)}`)
+        // })
+        // .catch((error: any) => {
+        //   console.error(error)
+        // })
+        context?.newSocket.sendMessage({
+          payload: {
+            app: process.env.NEXT_PUBLIC_BOT_ID || '',
+            from: {
+              userID: localStorage.getItem('userID'),
+            },
+            messageType: MessageType.FEEDBACK_POSITIVE,
+            messageId: {
+              replyId: msgId,
+              channelMessageId: sessionStorage.getItem('conversationId'),
+            },
+          } as Partial<XMessage>,
         })
-        .then((res: any) => {
-          // if (value === -1) {
-          //   context?.setCurrentQuery(msgId);
-          //   context?.setShowDialerPopup(true);
-          // } 
-          
-            toast.success(`${getToastMessage(t, value)}`);
-          
-        })
-        .catch((error: any) => {
-          console.error(error);
-        });
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [t]
-  );
+  )
 
   async function copyTextToClipboard(text: string) {
-    console.log("here");
-    if ("clipboard" in navigator) {
-      return await navigator.clipboard.writeText(text);
+    console.log('here')
+    if ('clipboard' in navigator) {
+      return await navigator.clipboard.writeText(text)
     } else {
-      return document.execCommand("copy", true, text);
+      return document.execCommand('copy', true, text)
     }
   }
   const feedbackHandler = useCallback(
     ({ like, msgId }: { like: 0 | 1 | -1; msgId: string }) => {
-      console.log("vbnm:", { reaction, like, msgId });
+      console.log('vbnm:', { reaction, like, msgId })
       if (reaction === 0) {
-        setReaction(like);
-        return onLikeDislike({ value: like, msgId });
+        setReaction(like)
+        return onLikeDislike({ value: like, msgId })
       }
       if (reaction === 1 && like === -1) {
-        console.log("vbnm triggered 1");
-        setReaction(-1);
-        return onLikeDislike({ value: -1, msgId });
+        console.log('vbnm triggered 1')
+        setReaction(-1)
+        return onLikeDislike({ value: -1, msgId })
       }
       if (reaction === -1 && like === 1) {
-        console.log("vbnm triggered 2");
-        setReaction(1);
-        return onLikeDislike({ value: 1, msgId });
+        console.log('vbnm triggered 2')
+        setReaction(1)
+        return onLikeDislike({ value: 1, msgId })
       }
 
-      console.log("vbnm triggered");
-      onLikeDislike({ value: 0, msgId });
-      setReaction(0);
+      console.log('vbnm triggered')
+      onLikeDislike({ value: 0, msgId })
+      setReaction(0)
     },
     [onLikeDislike, reaction]
-  );
+  )
 
   const getLists = useCallback(
     ({ choices, isDisabled }: { choices: any; isDisabled: boolean }) => {
-      console.log("hola qwer12:", {
+      console.log('hola qwer12:', {
         choices,
         isDisabled,
         isFull: !context?.messages?.[0]?.exampleOptions,
-      });
+      })
       return (
         <List
-          className={`${context?.messages?.[0]?.exampleOptions
+          className={`${
+            context?.messages?.[0]?.exampleOptions
               ? styles.list
               : styles.fullList
-            }`}
+          }`}
         >
           {choices?.map((choice: any, index: string) => (
             <ListItem
               key={`${index}_${choice?.key}`}
-              className={`${styles.onHover} ${choice?.hasFullWidth ? styles.fullListItem : styles.listItem
-                }`}
+              className={`${styles.onHover} ${
+                choice?.hasFullWidth ? styles.fullListItem : styles.listItem
+              }`}
               onClick={(e: any): void => {
-                e.preventDefault();
-                console.log("hola", { key: choice.key, isDisabled });
+                e.preventDefault()
+                console.log('hola', { key: choice.key, isDisabled })
                 if (isDisabled) {
-                  toast.error(`${t("message.cannot_answer_again")}`);
+                  toast.error(`${t('message.cannot_answer_again')}`)
                 } else {
                   if (context?.messages?.[0]?.exampleOptions) {
-                    console.log("clearing chat");
-                    console.log("hola:", { key: choice?.key });
-                    context?.setMessages([]);
-                    localStorage.setItem("locale", choice?.key);
-                    context?.setLocale(choice?.key);
-                    showDisasterOptions(choice?.key);
-                  } else context?.sendMessage(choice.text);
+                    console.log('clearing chat')
+                    console.log('hola:', { key: choice?.key })
+                    context?.setMessages([])
+                    localStorage.setItem('locale', choice?.key)
+                    context?.setLocale(choice?.key)
+                    showDisasterOptions(choice?.key)
+                  } else context?.sendMessage(choice.text)
                 }
               }}
             >
               <div className="onHover">
-                <div style={{ textAlign: "center" }}>{choice.text}</div>
+                <div style={{ textAlign: 'center' }}>{choice.text}</div>
                 {/* <div style={{ marginLeft: 'auto' }}>
                   <RightIcon width="5.5vh" color="var(--secondary)" />
                 </div> */}
@@ -203,10 +217,10 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
             </ListItem>
           ))}
         </List>
-      );
+      )
     },
     [context, showDisasterOptions, t]
-  );
+  )
 
   // useEffect(() => {
   //   // Add event listeners to the buttons
@@ -281,42 +295,41 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
     // sessionStorage.setItem("conversationId", newConversationId);
     // context?.setConversationId(newConversationId);
     // toast.success("New chat started!");
-  };
+  }
 
-  const { content, type } = message;
-  console.log({ content });
+  const { content, type } = message
+  console.log({ content })
 
-  const handleAudio = (url: any,id:string) => {
+  const handleAudio = (url: any, id: string) => {
     // console.log(url)
     if (!url) {
-      toast.error("No audio");
-      return;
+      toast.error('No audio')
+      return
     }
-   context?.setActiveAudioId(id)
-   setTimeout(()=>{ context?.playAudio(url, content);},10)
-    
-    
-  };
+    context?.setActiveAudioId(id)
+    setTimeout(() => {
+      context?.playAudio(url, content)
+    }, 10)
+  }
 
- 
   // const sanitizedText = content?.text?.replace(/\n/g, '\n ');
 
   // const formattedContent = sanitizedText ? sanitizedText
   //   ?.split(' ')
   //   ?.map((word: any, index: number) => addMarkup(word))
   //   ?.join(' ') : 'Something went wrong. Please try later.';
-console.log("shriram:",{rr:content?.text})
+  console.log('shriram:', { rr: content?.text })
   switch (type) {
-    case "loader":
-      return <Typing />;
-    case "text":
+    case 'loader':
+      return <Typing />
+    case 'text':
       return (
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            position: "relative",
-            maxWidth: "100%",
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            maxWidth: '100%',
           }}
         >
           {/* <div
@@ -325,14 +338,14 @@ console.log("shriram:",{rr:content?.text})
                 ? styles.messageTriangleRight
                 : styles.messageTriangleLeft
             }></div> */}
-          <Bubble type="text" style={{textAlign:'left'}}>
+          <Bubble type="text" style={{ textAlign: 'left' }}>
             <span
               className={styles.onHover}
               style={{
                 fontWeight: 600,
-                fontSize: "16px",
+                fontSize: '16px',
                 color:
-                  content?.data?.position === "right" ? "white" : "var(--font)",
+                  content?.data?.position === 'right' ? 'white' : 'var(--font)',
               }}
             >
               {/* <Markdown
@@ -367,35 +380,35 @@ console.log("shriram:",{rr:content?.text})
             </span>
             <div
               style={{
-                display: "flex",
-                justifyContent: "flex-end",
+                display: 'flex',
+                justifyContent: 'flex-end',
               }}
             >
               <span
                 style={{
-                  display: "flex",
-                  alignItems: "center",
+                  display: 'flex',
+                  alignItems: 'center',
                   color:
-                    content?.data?.position === "right"
-                      ? "white"
-                      : "var(--font)",
-                  fontSize: "12px",
+                    content?.data?.position === 'right'
+                      ? 'white'
+                      : 'var(--font)',
+                  fontSize: '12px',
                 }}
                 className="font-regular"
               >
                 {getFormatedTime(
                   content?.data?.sentTimestamp ||
-                  content?.data?.repliedTimestamp
+                    content?.data?.repliedTimestamp
                 )}
               </span>
             </div>
           </Bubble>
-          {content?.data?.position === "left" && (
-            <div style={{ display: "flex", position: "relative", top: "-5px" }}>
+          {content?.data?.position === 'left' && (
+            <div style={{ display: 'flex', position: 'relative', top: '-5px' }}>
               <div className={styles.msgFeedback}>
                 <div className={styles.msgFeedbackIcons}>
                   <div
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                     onClick={() =>
                       feedbackHandler({
                         like: 1,
@@ -410,7 +423,7 @@ console.log("shriram:",{rr:content?.text})
                     />
                   </div>
                   <div
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: 'pointer' }}
                     onClick={() =>
                       feedbackHandler({
                         like: -1,
@@ -426,13 +439,17 @@ console.log("shriram:",{rr:content?.text})
                   </div>
                 </div>
                 &nbsp;
-                <p>{t("message.helpful")}</p>
+                <p>{t('message.helpful')}</p>
               </div>
               <div
                 className={styles.msgSpeaker}
-                onClick={() => handleAudio(content?.data?.audio_url || "",content?.data?.messageId)}
+                onClick={() =>
+                  handleAudio(
+                    content?.data?.audio_url || '',
+                    content?.data?.messageId
+                  )
+                }
               >
-               
                 {context?.clickedAudioUrl === content?.data?.audio_url ? (
                   context?.ttsLoader ? (
                     <Loader />
@@ -440,7 +457,7 @@ console.log("shriram:",{rr:content?.text})
                     <Image
                       src={
                         // !context?.audioPlaying ? SpeakerIcon : SpeakerPauseIcon
-                        context?.audioPlaying ?  SpeakerPauseIcon : SpeakerIcon 
+                        context?.audioPlaying ? SpeakerPauseIcon : SpeakerIcon
                       }
                       width={!context?.audioPlaying ? 15 : 40}
                       height={!context?.audioPlaying ? 15 : 30}
@@ -448,30 +465,40 @@ console.log("shriram:",{rr:content?.text})
                     />
                   )
                 ) : (
-                  <Image src={context?.activeAudioId === content?.data?.messageId && context?.audioPlaying ?    SpeakerPauseIcon : SpeakerIcon } width={15} height={15} alt="" />
+                  <Image
+                    src={
+                      context?.activeAudioId === content?.data?.messageId &&
+                      context?.audioPlaying
+                        ? SpeakerPauseIcon
+                        : SpeakerIcon
+                    }
+                    width={15}
+                    height={15}
+                    alt=""
+                  />
                 )}
               </div>
             </div>
           )}
-          
-          {content?.data?.position === "left" && (
+
+          {content?.data?.position === 'left' && (
             // content?.data?.flowEnd === "true" && (
-              <div className={styles.reloadButton} onClick={newChatHandler}>
-                <Image src={reloadIcon} width={25} height={25} alt="" />
-              </div>
-            )}
+            <div className={styles.reloadButton} onClick={newChatHandler}>
+              <Image src={reloadIcon} width={25} height={25} alt="" />
+            </div>
+          )}
         </div>
-      );
-    case "options": {
+      )
+    case 'options': {
       return (
         <Bubble type="text">
-          <div style={{ display: "flex" }}>
+          <div style={{ display: 'flex' }}>
             <span
-              style={{ fontSize: "16px" }}
+              style={{ fontSize: '16px' }}
               dangerouslySetInnerHTML={{ __html: `${content?.text}` }}
             ></span>
           </div>
-          <div style={{ marginTop: "10px" }} />
+          <div style={{ marginTop: '10px' }} />
           {getLists({
             choices:
               content?.data?.payload?.buttonChoices ?? content?.data?.choices,
@@ -479,12 +506,12 @@ console.log("shriram:",{rr:content?.text})
           })}
           <div
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "self-end",
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'self-end',
             }}
           >
-            <span style={{ color: "var(--grey)", fontSize: "10px" }}>
+            <span style={{ color: 'var(--grey)', fontSize: '10px' }}>
               {/* {moment
           .utc(
             content?.data?.sentTimestamp ||
@@ -496,95 +523,95 @@ console.log("shriram:",{rr:content?.text})
             <span></span>
           </div>
         </Bubble>
-      );
+      )
     }
-    case "image": {
-      const url = content?.data?.payload?.media?.url || content?.data?.imageUrl;
+    case 'image': {
+      const url = content?.data?.payload?.media?.url || content?.data?.imageUrl
       return (
         <>
-          {content?.data?.position === "left" && (
+          {content?.data?.position === 'left' && (
             <div
               style={{
-                width: "40px",
-                marginRight: "4px",
-                textAlign: "center",
+                width: '40px',
+                marginRight: '4px',
+                textAlign: 'center',
               }}
             ></div>
           )}
           <Bubble type="image">
-            <div style={{ padding: "7px" }}>
+            <div style={{ padding: '7px' }}>
               <Img src={url} width="299" height="200" alt="image" lazy fluid />
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "self-end",
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'self-end',
                 }}
               >
-                <span style={{ color: "var(--font)", fontSize: "10px" }}>
+                <span style={{ color: 'var(--font)', fontSize: '10px' }}>
                   {getFormatedTime(
                     content?.data?.sentTimestamp ||
-                    content?.data?.repliedTimestamp
+                      content?.data?.repliedTimestamp
                   )}
                 </span>
               </div>
             </div>
           </Bubble>
         </>
-      );
+      )
     }
 
-    case "file": {
-      const url = content?.data?.payload?.media?.url || content?.data?.fileUrl;
+    case 'file': {
+      const url = content?.data?.payload?.media?.url || content?.data?.fileUrl
       return (
         <>
-          {content?.data?.position === "left" && (
+          {content?.data?.position === 'left' && (
             <div
               style={{
-                width: "40px",
-                marginRight: "4px",
-                textAlign: "center",
+                width: '40px',
+                marginRight: '4px',
+                textAlign: 'center',
               }}
             ></div>
           )}
           <Bubble type="image">
-            <div style={{ padding: "7px" }}>
+            <div style={{ padding: '7px' }}>
               <FileCard file={url} extension="pdf" />
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "self-end",
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'self-end',
                 }}
               >
-                <span style={{ color: "var(--font)", fontSize: "10px" }}>
+                <span style={{ color: 'var(--font)', fontSize: '10px' }}>
                   {getFormatedTime(
                     content?.data?.sentTimestamp ||
-                    content?.data?.repliedTimestamp
+                      content?.data?.repliedTimestamp
                   )}
                 </span>
               </div>
             </div>
           </Bubble>
         </>
-      );
+      )
     }
 
-    case "video": {
-      const url = content?.data?.payload?.media?.url || content?.data?.videoUrl;
+    case 'video': {
+      const url = content?.data?.payload?.media?.url || content?.data?.videoUrl
       return (
         <>
-          {content?.data?.position === "left" && (
+          {content?.data?.position === 'left' && (
             <div
               style={{
-                width: "40px",
-                marginRight: "4px",
-                textAlign: "center",
+                width: '40px',
+                marginRight: '4px',
+                textAlign: 'center',
               }}
             ></div>
           )}
           <Bubble type="image">
-            <div style={{ padding: "7px" }}>
+            <div style={{ padding: '7px' }}>
               <Video
                 cover="https://uxwing.com/wp-content/themes/uxwing/download/video-photography-multimedia/video-icon.png"
                 src={url}
@@ -592,22 +619,22 @@ console.log("shriram:",{rr:content?.text})
 
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "self-end",
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'self-end',
                 }}
               >
-                <span style={{ color: "var(--font)", fontSize: "10px" }}>
+                <span style={{ color: 'var(--font)', fontSize: '10px' }}>
                   {getFormatedTime(
                     content?.data?.sentTimestamp ||
-                    content?.data?.repliedTimestamp
+                      content?.data?.repliedTimestamp
                   )}
                 </span>
               </div>
             </div>
           </Bubble>
         </>
-      );
+      )
     }
 
     default:
@@ -617,8 +644,8 @@ console.log("shriram:",{rr:content?.text})
           // @ts-ignore
           renderItem={(item): ReactElement => <Button label={item.text} />}
         />
-      );
+      )
   }
-};
+}
 
-export default ChatMessageItem;
+export default ChatMessageItem

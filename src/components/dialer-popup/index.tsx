@@ -5,64 +5,93 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
-import crossIcon from "../../assets/icons/crossIcon.svg";
-import styles from "./index.module.css";
-import Image from "next/image";
-import { useLocalization } from "../../hooks";
-import axios from "axios";
-import toast from "react-hot-toast";
-import { AppContext } from "../../context";
+} from 'react'
+import crossIcon from '../../assets/icons/crossIcon.svg'
+import { MessageType, XMessage } from '@samagra-x/xmessage'
+import styles from './index.module.css'
+import Image from 'next/image'
+import { useLocalization } from '../../hooks'
+import axios from 'axios'
+import toast from 'react-hot-toast'
+import { AppContext } from '../../context'
 
 const DialerPopup: React.FC<any> = ({ setShowDialerPopup }) => {
-  const t = useLocalization();
+  const t = useLocalization()
   const [reviewSubmitted, reviewSubmitError] = useMemo(
-    () => [t("message.review_submitted"), t("error.fail_to_submit_review")],
+    () => [t('message.review_submitted'), t('error.fail_to_submit_review')],
     [t]
-  );
-  const context = useContext(AppContext);
-  const [suggestions, setSuggestions] = useState([]);
-  const [suggestionClicked, setSuggestionClicked] = useState(false);
-  const [activeSuggestion, setActiveSuggestion] = useState<number>(0);
+  )
+  const context = useContext(AppContext)
+  const [suggestions, setSuggestions] = useState([])
+  const [suggestionClicked, setSuggestionClicked] = useState(false)
+  const [activeSuggestion, setActiveSuggestion] = useState<number>(0)
   const [transliterationConfig, setTransliterationConfig] = useState({
-    auth: "",
-    serviceId: "",
-  });
-  const [review, setReview] = useState("");
-  const inputRef = useRef(null);
-  const [cursorPosition, setCursorPosition] = useState(0);
+    auth: '',
+    serviceId: '',
+  })
+  const [review, setReview] = useState('')
+  const inputRef = useRef(null)
+  const [cursorPosition, setCursorPosition] = useState(0)
+
+  const negativeFeedbackPayload = {
+    app: process.env.NEXT_PUBLIC_BOT_ID || '',
+    messageType: MessageType.FEEDBACK_NEGATIVE,
+    messageId: {
+      replyId: context?.currentQuery,
+      channelMessageId: sessionStorage.getItem('conversationId'),
+    },
+    from: {
+      userID: localStorage.getItem('userID'),
+    },
+  } as Partial<XMessage>
 
   const submitReview = useCallback(
     (feedback: string) => {
-      console.log("holai",{context})
-      axios
-        .post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/user/message/dislike/${context?.currentQuery}`,
-          {
-            feedback,
+      console.log('holai', { context })
+      context?.newSocket.sendMessage({
+        payload: {
+          payload: {
+            text: feedback,
           },
-        )
-        .then((response) => {
-          toast.success(reviewSubmitted);
-          context?.setCurrentQuery("");
-          setShowDialerPopup(false);
-        })
-        .catch((error) => {
-          toast.error(reviewSubmitError);
-          setShowDialerPopup(false);
-          //@ts-ignore
-          // logEvent(analytics, "console_error", {
-          //   error_message: error.message,
-          // });
-        });
+          ...negativeFeedbackPayload,
+        } as Partial<XMessage>,
+      })
+      context?.setCurrentQuery('')
+      setShowDialerPopup(false)
+
+      // axios
+      //   .post(
+      //     `${process.env.NEXT_PUBLIC_BASE_URL}/user/message/dislike/${context?.currentQuery}`,
+      //     {
+      //       feedback,
+      //     }
+      //   )
+      //   .then((response) => {
+      //     toast.success(reviewSubmitted)
+      //     context?.setCurrentQuery('')
+      //     setShowDialerPopup(false)
+      //   })
+      //   .catch((error) => {
+      //     toast.error(reviewSubmitError)
+      //     setShowDialerPopup(false)
+      //     //@ts-ignore
+      //     // logEvent(analytics, "console_error", {
+      //     //   error_message: error.message,
+      //     // });
+      //   })
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [reviewSubmitError, reviewSubmitted, setShowDialerPopup,context?.currentQuery]
-  );
+    [
+      reviewSubmitError,
+      reviewSubmitted,
+      setShowDialerPopup,
+      context?.currentQuery,
+    ]
+  )
 
   const suggestionHandler = (e: any, index: number) => {
-    setActiveSuggestion(index);
-  };
+    setActiveSuggestion(index)
+  }
 
   // const suggestionClickHandler = useCallback(
   //   (e: any) => {
@@ -268,33 +297,33 @@ const DialerPopup: React.FC<any> = ({ setShowDialerPopup }) => {
   // }, [review, cursorPosition]);
 
   const handleInputChange = (e: any) => {
-    const inputValue = e.target.value;
-    setReview(inputValue);
+    const inputValue = e.target.value
+    setReview(inputValue)
     // Store the cursor position
-    const cursorPosition = e.target.selectionStart;
-    setCursorPosition(cursorPosition);
+    const cursorPosition = e.target.selectionStart
+    setCursorPosition(cursorPosition)
     // setShowExampleMessages(inputValue.length === 0);
     // Adjust textarea height dynamically based on content
     if (inputRef.current) {
       //@ts-ignore
-      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = 'auto'
       //@ts-ignore
-      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`
     }
-  };
+  }
 
   return (
     <div className={styles.main}>
       <div
         className={styles.crossIconBox}
         onClick={() => {
-          context?.setCurrentQuery("");
-          setShowDialerPopup(false);
+          context?.setCurrentQuery('')
+          setShowDialerPopup(false)
         }}
       >
         <Image src={crossIcon} alt="crossIcon" layout="responsive" />
       </div>
-      <p>{t("label.comment")}</p>
+      <p>{t('label.comment')}</p>
       <div className={styles.dialerBox}>
         {/* <div className={styles.suggestions}>
           {suggestions.map((elem, index) => {
@@ -320,19 +349,17 @@ const DialerPopup: React.FC<any> = ({ setShowDialerPopup }) => {
           id="experience-feedback"
           cols={35}
           rows={5}
-          placeholder={t("message.comment_description")}
+          placeholder={t('message.comment_description')}
         ></textarea>
-<div>
-        <button onClick={() => submitReview(review)}>
-          {t("label.submit_feedback")}
-        </button>
-        <button  onClick={() => submitReview('')}>
-          {t("label.skip")}
-        </button>
+        <div>
+          <button onClick={() => submitReview(review)}>
+            {t('label.submit_feedback')}
+          </button>
+          <button onClick={() => submitReview('')}>{t('label.skip')}</button>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default DialerPopup;
+export default DialerPopup
