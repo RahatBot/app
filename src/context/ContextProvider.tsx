@@ -137,7 +137,7 @@ const ContextProvider: FC<{
               polling: {
                 extraHeaders: {
                   // Authorization: `Bearer ${localStorage.getItem('auth')}`,
-                  channel: 'akai',
+                  channel: 'rahat',
                 },
               },
             },
