@@ -295,10 +295,10 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
     //   return;
     // }
     // context?.setMessages([]);
-    // const newConversationId = uuidv4();
+    const newConversationId = uuidv4()
     // const newUserId = uuidv4();
     // localStorage.setItem("userID", newUserId);
-    // sessionStorage.setItem("conversationId", newConversationId);
+    sessionStorage.setItem('conversationId', newConversationId)
     // context?.setConversationId(newConversationId);
     // toast.success("New chat started!");
   }

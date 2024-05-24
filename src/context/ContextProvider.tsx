@@ -386,7 +386,8 @@ const ContextProvider: FC<{
           sessionStorage.getItem('conversationId') ===
           msg.messageId.channelMessageId
         ) {
-          const word = msg.payload.text
+          let word = msg.payload.text
+          word = word.replace(/\\n/g, '<br/>')
 
           setMessages((prev: any) => {
             const updatedMessages = [...prev]
@@ -403,6 +404,8 @@ const ContextProvider: FC<{
               updatedMessages[existingMsgIndex].text =
                 word.replace(/<end\/>/g, '') + ' '
             } else {
+              let word = msg.payload.text
+              word = word.replace(/\\n/g, '<br/>')
               // If the message doesn't exist, create a new one
               const newMsg = {
                 text: word.replace(/<end\/>/g, '') + ' ',
