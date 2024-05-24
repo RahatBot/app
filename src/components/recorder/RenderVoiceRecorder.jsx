@@ -1,70 +1,70 @@
-import { useContext, useState, useEffect } from 'react';
-import Image from 'next/image';
-import stop from '../../assets/icons/stop.gif';
-import start from '../../assets/icons/startIcon.svg';
-import { Grid, CircularProgress, Backdrop } from '@material-ui/core';
-import styles from './styles.module.css';
-import toast from 'react-hot-toast';
-import { AppContext } from '../../context';
-import { useLocalization } from '../../hooks';
-import axios from 'axios';
+import { useContext, useState, useEffect } from 'react'
+import Image from 'next/image'
+import stop from '../../assets/icons/stop.gif'
+import start from '../../assets/icons/startIcon.svg'
+import { Grid, CircularProgress, Backdrop } from '@material-ui/core'
+import styles from './styles.module.css'
+import toast from 'react-hot-toast'
+import { AppContext } from '../../context'
+import { useLocalization } from '../../hooks'
+import axios from 'axios'
 
 const RenderVoiceRecorder = ({ setInputMsg }) => {
-  const context = useContext(AppContext);
-  const t = useLocalization();
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [apiCallStatus, setApiCallStatus] = useState('idle');
+  const context = useContext(AppContext)
+  const t = useLocalization()
+  const [mediaRecorder, setMediaRecorder] = useState(null)
+  const [apiCallStatus, setApiCallStatus] = useState('idle')
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const recorder = new MediaRecorder(stream)
 
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
-          makeComputeAPICall(event.data);
+          makeComputeAPICall(event.data)
         }
-      };
+      }
 
-      recorder.start();
-      setMediaRecorder(recorder);
+      recorder.start()
+      setMediaRecorder(recorder)
     } catch (error) {
-      console.error(error);
-      setApiCallStatus('error');
-      toast.error(`${t('message.recorder_error')}`);
+      console.error(error)
+      setApiCallStatus('error')
+      toast.error(`${t('message.recorder_error')}`)
     }
-  };
+  }
 
   const stopRecording = () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
-      mediaRecorder.stop();
+      mediaRecorder.stop()
     }
-  };
+  }
 
   useEffect(() => {
     return () => {
       if (mediaRecorder) {
-        mediaRecorder.stop();
+        mediaRecorder.stop()
       }
-    };
-  }, [mediaRecorder]);
+    }
+  }, [mediaRecorder])
 
   const makeComputeAPICall = async (blob) => {
     try {
-      setApiCallStatus('processing');
-      console.log('base', blob);
-      toast.success(`${t('message.recorder_wait')}`);
+      setApiCallStatus('processing')
+      console.log('base', blob)
+      toast.success(`${t('message.recorder_wait')}`)
 
-      const apiEndpoint = process.env.NEXT_PUBLIC_BASE_URL;
+      const apiEndpoint = process.env.NEXT_PUBLIC_SPEECH_TO_TEXT
 
-      const formData = new FormData();
-      formData.append('file', blob, 'audio.wav');
+      const formData = new FormData()
+      formData.append('file', blob, 'audio.wav')
       let base64 = await fetch(apiEndpoint + '/aitools/base64', {
         method: 'POST',
         body: formData,
-      });
+      })
 
-      base64 = await base64.text();
+      base64 = await base64.text()
       const resp = await axios.post(
         apiEndpoint + '/prompt',
         {
@@ -73,32 +73,32 @@ const RenderVoiceRecorder = ({ setInputMsg }) => {
             category: 'base64audio',
             text: base64,
           },
-          inputLanguage: context?.locale || 'en'
+          inputLanguage: context?.locale || 'en',
         },
         {
           headers: {
             'Content-Type': 'application/json',
             'user-id': localStorage.getItem('userID'),
-            'Conversation-id': context?.newConversationId
+            'Conversation-id': context?.newConversationId,
           },
         }
-      );
-      console.log(resp);
+      )
+      console.log(resp)
       if (resp.status === 201) {
         if (resp.data.text === '')
-          throw new Error('Unexpected end of JSON input');
-        setInputMsg(resp.data.text);
+          throw new Error('Unexpected end of JSON input')
+        setInputMsg(resp.data.text)
       } else {
-        toast.error(`${t('message.recorder_error')}`);
-        console.log(resp);
+        toast.error(`${t('message.recorder_error')}`)
+        console.log(resp)
       }
-      setApiCallStatus('idle');
+      setApiCallStatus('idle')
     } catch (error) {
-      console.error(error);
-      setApiCallStatus('error');
-      toast.error(`${t('message.recorder_error')}`);
+      console.error(error)
+      setApiCallStatus('error')
+      toast.error(`${t('message.recorder_error')}`)
     }
-  };
+  }
 
   return (
     <div>
@@ -115,7 +115,7 @@ const RenderVoiceRecorder = ({ setInputMsg }) => {
               src={stop}
               alt="stopIcon"
               onClick={() => {
-                stopRecording();
+                stopRecording()
               }}
               style={{ cursor: 'pointer' }}
               layout="responsive"
@@ -143,11 +143,12 @@ const RenderVoiceRecorder = ({ setInputMsg }) => {
             md={2}
             lg={2}
             xl={2}
-            className={styles.flexEndStyle}></Grid>
+            className={styles.flexEndStyle}
+          ></Grid>
         </Grid>
       </Grid>
     </div>
-  );
-};
+  )
+}
 
-export default RenderVoiceRecorder;
+export default RenderVoiceRecorder

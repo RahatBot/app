@@ -180,9 +180,9 @@ const ContextProvider: FC<{
         const blob = new Blob([arrayBuffer], { type: 'audio/wav' })
 
         // Create an object URL from Blob
-        const url = URL.createObjectURL(blob)
+        // const url = URL.createObjectURL(blob)
 
-        resolve(url)
+        // resolve(url)
       } catch (error) {
         reject(error)
       }
