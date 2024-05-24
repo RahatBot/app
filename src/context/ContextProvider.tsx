@@ -75,6 +75,10 @@ const ContextProvider: FC<{
   const UserId = localStorage.getItem('userID')
 
   useEffect(() => {
+    sessionStorage.setItem('conversationId', uuidv4())
+  }, [])
+
+  useEffect(() => {
     if (localStorage.getItem('locale')) {
       const disasterString =
         localStorage.getItem('locale') === 'hi'
