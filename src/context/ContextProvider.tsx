@@ -590,49 +590,48 @@ const ContextProvider: FC<{
             const message = JSON.parse(event.data)
 
             // Handle the incoming message here
-            console.log('Message from server ankit:', message)
           })
 
-          const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/prompt`,
-            data,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                'user-id': localStorage.getItem('userID'),
-                'Conversation-Id': newConversationId,
-              },
-            }
-          )
+          // const response = await axios.post(
+          //   `${process.env.NEXT_PUBLIC_BASE_URL}/prompt`,
+          //   data,
+          //   {
+          //     headers: {
+          //       'Content-Type': 'application/json',
+          //       'user-id': localStorage.getItem('userID'),
+          //       'Conversation-Id': newConversationId,
+          //     },
+          //   }
+          // )
 
-          // Handle response here
-          console.log('hie', response?.data)
-          onMessageReceived({
-            content: {
-              title: response?.data?.text || response?.data?.error,
-              msg_type: 'TEXT',
-              choices: null,
-              conversationId: sessionStorage.getItem('conversationId'),
-              audio_url: response?.data?.audio?.text || '',
-              flowEnd: response?.data?.flowEnd,
-            },
-            messageId: response?.data?.messageId,
-          })
+          // // Handle response here
+          // console.log('hie', response?.data)
+          // onMessageReceived({
+          //   content: {
+          //     title: response?.data?.text || response?.data?.error,
+          //     msg_type: 'TEXT',
+          //     choices: null,
+          //     conversationId: sessionStorage.getItem('conversationId'),
+          //     audio_url: response?.data?.audio?.text || '',
+          //     flowEnd: response?.data?.flowEnd,
+          //   },
+          //   messageId: response?.data?.messageId,
+          // })
         } catch (error) {
           // Handle error here
-          onMessageReceived({
-            content: {
-              title: 'Something went wrong. Please try again later.',
-              msg_type: 'TEXT',
-              choices: null,
-              conversationId: sessionStorage.getItem('conversationId'),
-              audio_url: '',
-            },
-            messageId: msgId,
-          })
-          setIsMsgReceiving(false)
-          setLoading(false)
-          console.log(error)
+          // onMessageReceived({
+          //   content: {
+          //     title: 'Something went wrong. Please try again later.',
+          //     msg_type: 'TEXT',
+          //     choices: null,
+          //     conversationId: sessionStorage.getItem('conversationId'),
+          //     audio_url: '',
+          //   },
+          //   messageId: msgId,
+          // })
+          // setIsMsgReceiving(false)
+          // setLoading(false)
+          // console.log(error)
         }
       }
     },
