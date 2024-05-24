@@ -71,7 +71,7 @@ const ContextProvider: FC<{
   const [newConversationId, setNewConversationId] = useState(uuidv4())
   const [newSocket, setNewSocket] = useState<any>()
 
-  const URL = process.env.NEXT_PUBLIC_SOCKET_URL || ''
+  const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || ''
   const UserId = localStorage.getItem('userID')
 
   useEffect(() => {
@@ -131,7 +131,7 @@ const ContextProvider: FC<{
     if (UserId) {
       setNewSocket(
         new UCI(
-          URL,
+          SOCKET_URL,
           {
             transportOptions: {
               polling: {
@@ -177,12 +177,12 @@ const ContextProvider: FC<{
         }
 
         // Create a Blob from ArrayBuffer
-        const blob = new Blob([arrayBuffer], { type: 'audio/wav' })
+        const blob: any = new Blob([arrayBuffer], { type: 'audio/wav' })
 
         // Create an object URL from Blob
-        // const url = URL.createObjectURL(blob)
+        const url = URL.createObjectURL(blob)
 
-        // resolve(url)
+        resolve(url)
       } catch (error) {
         reject(error)
       }
@@ -279,6 +279,7 @@ const ContextProvider: FC<{
         console.log('holai 1')
         return
       }
+      console.log('url resp', url)
       url = await base64WavToPlayableLink(url)
       console.log('holai:', { url, audioElement })
       if (audioElement) {
@@ -374,51 +375,83 @@ const ContextProvider: FC<{
   )
 
   const updateMsgState = useCallback(
-    ({
-      user,
-      msg,
-      media,
-    }: {
-      user: { name: string; id: string }
-      msg: {
-        content: {
-          title: string
-          choices: any
-          audio_url: string
-          flowEnd: string
-        }
-        messageId: string
-      }
-      media: any
-    }) => {
-      console.log('hie', msg)
-      if (msg.content.title !== '') {
-        const newMsg = {
-          username: user?.name,
-          text: msg.content.title,
-          choices: msg.content.choices,
-          audio_url: msg.content.audio_url,
-          flowEnd: msg.content.flowEnd,
-          position: 'left',
-          id: user?.id,
-          botUuid: user?.id,
-          reaction: 0,
-          messageId: msg?.messageId,
-          //@ts-ignore
-          conversationId: msg?.content?.conversationId,
-          sentTimestamp: Date.now(),
-          ...media,
-        }
+    async ({ msg, media }: { msg: any; media: any }) => {
+      console.log('updatemsgstate:', msg)
+      if (
+        msg?.messageId?.Id &&
+        msg?.messageId?.channelMessageId &&
+        msg?.messageId?.replyId
+      ) {
+        if (
+          sessionStorage.getItem('conversationId') ===
+          msg.messageId.channelMessageId
+        ) {
+          const word = msg.payload.text
 
-        console.log('here', msg, conversationId)
-        //@ts-ignore
-        if (conversationId === msg?.content?.conversationId) {
-          console.log('here', newMsg)
-          setMessages((prev: any) => [...prev, newMsg])
+          setMessages((prev: any) => {
+            const updatedMessages = [...prev]
+            const existingMsgIndex = updatedMessages.findIndex(
+              (m: any) => m.messageId === msg.messageId.Id
+            )
+            console.log('existingMsgIndex', existingMsgIndex)
+
+            if (existingMsgIndex !== -1) {
+              // Update the existing message with the new word
+              if (word.endsWith('<end/>')) {
+                updatedMessages[existingMsgIndex].isEnd = true
+              }
+              updatedMessages[existingMsgIndex].text =
+                word.replace(/<end\/>/g, '') + ' '
+            } else {
+              // If the message doesn't exist, create a new one
+              const newMsg = {
+                text: word.replace(/<end\/>/g, '') + ' ',
+                isEnd: word.endsWith('<end/>') ? true : false,
+                choices: msg?.payload?.buttonChoices,
+                position: 'left',
+                reaction: 0,
+                messageId: msg?.messageId.Id,
+                conversationId: msg.messageId.channelMessageId,
+                sentTimestamp: Date.now(),
+                card: msg?.payload?.card,
+                isGuided: msg?.transformer?.metaData?.isGuided || false,
+                // btns: msg?.payload?.buttonChoices,
+                // audio_url: msg?.content?.audio_url,
+                // metaData: msg.payload?.metaData
+                //     ? JSON.parse(msg.payload?.metaData)
+                //     : null,
+                ...media,
+              }
+
+              updatedMessages.push(newMsg)
+              // console.log('useeffect', newMsg.text);
+              // try {
+              //   saveTelemetryEvent('0.1', 'E017', 'userQuery', 'responseAt', {
+              //     botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+              //     orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+              //     userId: localStorage.getItem('userID') || '',
+              //     phoneNumber: localStorage.getItem('phoneNumber') || '',
+              //     conversationId:
+              //       sessionStorage.getItem('conversationId') || '',
+              //     messageId: msg.messageId.replyId,
+              //     text: '',
+              //     timeTaken: 0,
+              //   })
+              // } catch (err) {
+              //   console.error(err)
+              // }
+            }
+            return updatedMessages
+          })
+          setIsMsgReceiving(false)
+          // if (msg.payload.text.endsWith('<end/>')) {
+          //   setEndTime(Date.now())
+          // }
+          setLoading(false)
         }
       }
     },
-    [conversationId]
+    [messages]
   )
 
   console.log('erty:', { conversationId })
@@ -456,45 +489,43 @@ const ContextProvider: FC<{
 
   const onMessageReceived = useCallback(
     async (msg: any) => {
-      console.log('mssgs:', messages)
-      console.log('#-debug:', { msg })
-      setLoading(false)
-      setIsMsgReceiving(false)
-      //@ts-ignore
-      const user = JSON.parse(localStorage.getItem('currentUser'))
-
-      if (msg.content.msg_type.toUpperCase() === 'IMAGE') {
-        updateMsgState({
-          user,
-          msg,
-          media: { imageUrl: msg?.content?.media_url },
+      // if (!msg?.content?.id) msg.content.id = '';
+      if (msg.messageType.toUpperCase() === 'IMAGE') {
+        await updateMsgState({
+          msg: msg,
+          media: { imageUrls: msg?.content?.media_url },
         })
-      } else if (msg.content.msg_type.toUpperCase() === 'AUDIO') {
+      } else if (msg.messageType.toUpperCase() === 'AUDIO') {
         updateMsgState({
-          user,
           msg,
           media: { audioUrl: msg?.content?.media_url },
         })
-      } else if (msg.content.msg_type.toUpperCase() === 'VIDEO') {
+      } else if (msg.messageType.toUpperCase() === 'HSM') {
         updateMsgState({
-          user,
+          msg,
+          media: { audioUrl: msg?.content?.media_url },
+        })
+      } else if (msg.messageType.toUpperCase() === 'VIDEO') {
+        updateMsgState({
           msg,
           media: { videoUrl: msg?.content?.media_url },
         })
       } else if (
-        msg.content.msg_type.toUpperCase() === 'DOCUMENT' ||
-        msg.content.msg_type.toUpperCase() === 'FILE'
+        msg.messageType.toUpperCase() === 'DOCUMENT' ||
+        msg.messageType.toUpperCase() === 'FILE'
       ) {
         updateMsgState({
-          user,
           msg,
           media: { fileUrl: msg?.content?.media_url },
         })
-      } else if (msg.content.msg_type.toUpperCase() === 'TEXT') {
-        updateMsgState({ user, msg, media: {} })
+      } else if (msg.messageType.toUpperCase() === 'TEXT') {
+        await updateMsgState({
+          msg: msg,
+          media: null,
+        })
       }
     },
-    [messages, updateMsgState]
+    [updateMsgState]
   )
 
   const onChangeCurrentUser = useCallback((newUser: UserType) => {
@@ -588,7 +619,7 @@ const ContextProvider: FC<{
           newSocket.addEventListener('message', (event: any) => {
             // Parse the message data
             const message = JSON.parse(event.data)
-
+            console.log('message', message)
             // Handle the incoming message here
           })
 

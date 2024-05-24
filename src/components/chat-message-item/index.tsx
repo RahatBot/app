@@ -42,6 +42,7 @@ import rehypeRaw from 'rehype-raw'
 import { Button } from '@chakra-ui/react'
 import { useCookies } from 'react-cookie'
 import Loader from '../loader'
+import { Backdrop } from '@material-ui/core'
 
 const getToastMessage = (t: any, reaction: number): string => {
   if (reaction === 1) return t('toast.reaction_like')
@@ -148,6 +149,8 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
   const feedbackHandler = useCallback(
     ({ like, msgId }: { like: 0 | 1 | -1; msgId: string }) => {
       console.log('vbnm:', { reaction, like, msgId })
+      if (reaction !== 0) return toast.error('Cannot give feedback again')
+
       if (reaction === 0) {
         setReaction(like)
         return onLikeDislike({ value: like, msgId })
@@ -169,12 +172,11 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
     },
     [onLikeDislike, reaction]
   )
-
+  const [isDisable, setIsDisable] = useState(false)
   const getLists = useCallback(
-    ({ choices, isDisabled }: { choices: any; isDisabled: boolean }) => {
+    ({ choices }: { choices: any }) => {
       console.log('hola qwer12:', {
         choices,
-        isDisabled,
         isFull: !context?.messages?.[0]?.exampleOptions,
       })
       return (
@@ -191,10 +193,11 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
               className={`${styles.onHover} ${
                 choice?.hasFullWidth ? styles.fullListItem : styles.listItem
               }`}
+              style={isDisable ? { backgroundColor: 'var(--grey)' } : {}}
               onClick={(e: any): void => {
                 e.preventDefault()
-                console.log('hola', { key: choice.key, isDisabled })
-                if (isDisabled) {
+                console.log('hola', { key: choice.key, isDisable })
+                if (isDisable) {
                   toast.error(`${t('message.cannot_answer_again')}`)
                 } else {
                   if (context?.messages?.[0]?.exampleOptions) {
@@ -204,7 +207,10 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                     localStorage.setItem('locale', choice?.key)
                     context?.setLocale(choice?.key)
                     showDisasterOptions(choice?.key)
-                  } else context?.sendMessage(choice.text)
+                  } else {
+                    context?.sendMessage(choice.text)
+                    setIsDisable(true)
+                  }
                 }
               }}
             >
@@ -299,18 +305,128 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
 
   const { content, type } = message
   console.log({ content })
+  const [audioFetched, setAudioFetched] = useState(false)
+  const [ttsLoader, setTtsLoader] = useState(false)
 
-  const handleAudio = (url: any, id: string) => {
-    // console.log(url)
-    if (!url) {
-      toast.error('No audio')
-      return
-    }
-    context?.setActiveAudioId(id)
-    setTimeout(() => {
+  const handleAudio = useCallback(
+    (url: any) => {
+      // console.log(url)
+      if (!url) {
+        if (audioFetched) toast.error('No audio')
+        return
+      }
       context?.playAudio(url, content)
-    }, 10)
-  }
+      setTtsLoader(false)
+      // saveTelemetryEvent('0.1', 'E015', 'userQuery', 'timesAudioUsed', {
+      //   botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+      //   orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+      //   userId: localStorage.getItem('userID') || '',
+      //   phoneNumber: localStorage.getItem('phoneNumber') || '',
+      //   conversationId: sessionStorage.getItem('conversationId') || '',
+      //   messageId: content?.data?.messageId,
+      //   text: content?.text,
+      //   timesAudioUsed: 1,
+      // })
+    },
+    [audioFetched, content, context?.playAudio]
+  )
+  const downloadAudio = useCallback(() => {
+    const fetchAudio = async (text: string) => {
+      // const startTime = Date.now()
+      try {
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_TEXT_TO_SPEECH}`,
+          {
+            text: text,
+            language: localStorage.getItem('locale') || 'en',
+            messageId: content?.data?.messageId,
+            disableMinio: true,
+            disableTelemetry: true,
+            conversationId: sessionStorage.getItem('conversationId') || '',
+          },
+          {
+            headers: {
+              botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+              orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+              userId: localStorage.getItem('userID') || '',
+            },
+          }
+        )
+        setAudioFetched(true)
+        // const endTime = Date.now()
+        // const latency = endTime - startTime
+        // await saveTelemetryEvent(
+        //   '0.1',
+        //   'E045',
+        //   'aiToolProxyToolLatency',
+        //   't2sLatency',
+        //   {
+        //     botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+        //     orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+        //     userId: localStorage.getItem('userID') || '',
+        //     phoneNumber: localStorage.getItem('phoneNumber') || '',
+        //     conversationId: sessionStorage.getItem('conversationId') || '',
+        //     text: text,
+        //     messageId: content?.data?.messageId,
+        //     timeTaken: latency,
+        //     createdAt: Math.floor(startTime / 1000),
+        //     audioUrl: response?.data?.url || 'No audio URL',
+        //   }
+        // )
+        // cacheAudio(response.data);
+        console.log('audio respo', response.data)
+        return response?.data?.base64
+      } catch (error: any) {
+        console.error('Error fetching audio:', error)
+        setAudioFetched(true)
+        // const endTime = Date.now()
+        // const latency = endTime - startTime
+        // await saveTelemetryEvent(
+        //   '0.1',
+        //   'E045',
+        //   'aiToolProxyToolLatency',
+        //   't2sLatency',
+        //   {
+        //     botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+        //     orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+        //     userId: localStorage.getItem('userID') || '',
+        //     phoneNumber: localStorage.getItem('phoneNumber') || '',
+        //     conversationId: sessionStorage.getItem('conversationId') || '',
+        //     text: text,
+        //     msgId: content?.data?.messageId,
+        //     timeTaken: latency,
+        //     createdAt: Math.floor(startTime / 1000),
+        //     error: error?.message || 'Error fetching audio',
+        //   }
+        // )
+        return null
+      }
+    }
+
+    const fetchData = async () => {
+      if (!content?.data?.audio_url && content?.data?.position === 'left') {
+        const toastId = toast.loading(`${t('message.download_audio')}`)
+        setTimeout(() => {
+          toast.dismiss(toastId)
+        }, 1500)
+        const text = content?.text
+        const audioUrl = await fetchAudio(text ?? 'No text found')
+
+        setTtsLoader(false)
+        if (audioUrl) {
+          content.data.audio_url = audioUrl
+          handleAudio(audioUrl)
+        } else setTtsLoader(false)
+      }
+    }
+
+    if (content?.data?.audio_url) {
+      handleAudio(content.data.audio_url)
+    } else {
+      setTtsLoader(true)
+      fetchData()
+    }
+  }, [handleAudio, content?.data, content?.text, t])
 
   // const sanitizedText = content?.text?.replace(/\n/g, '\n ');
 
@@ -441,15 +557,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
                 &nbsp;
                 <p>{t('message.helpful')}</p>
               </div>
-              <div
-                className={styles.msgSpeaker}
-                onClick={() =>
-                  handleAudio(
-                    content?.data?.audio_url || '',
-                    content?.data?.messageId
-                  )
-                }
-              >
+              <div className={styles.msgSpeaker} onClick={downloadAudio}>
                 {context?.clickedAudioUrl === content?.data?.audio_url ? (
                   context?.ttsLoader ? (
                     <Loader />
@@ -502,7 +610,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
           {getLists({
             choices:
               content?.data?.payload?.buttonChoices ?? content?.data?.choices,
-            isDisabled: content?.data?.disabled,
+            // isDisabled: content?.data?.disabled,
           })}
           <div
             style={{
