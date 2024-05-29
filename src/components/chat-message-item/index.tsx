@@ -52,11 +52,14 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
   currentUser,
   message,
   onSend,
+  isDisable,
+  setIsDisable,
 }) => {
   const t = useLocalization()
   const context = useContext(AppContext)
   const [reaction, setReaction] = useState(message?.content?.data?.reaction)
   const [cookies, setCookie, removeCookie] = useCookies(['access_token'])
+  // const [isDisable, setIsDisable] = useState(false)
 
   useEffect(() => {
     setReaction(message?.content?.data?.reaction)
@@ -172,7 +175,6 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
     },
     [onLikeDislike, reaction]
   )
-  const [isDisable, setIsDisable] = useState(false)
   const getLists = useCallback(
     ({ choices }: { choices: any }) => {
       console.log('hola qwer12:', {

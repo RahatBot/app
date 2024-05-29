@@ -1,26 +1,27 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import { useLocalization } from "../hooks/useLocalization";
-import dynamic from "next/dynamic";
-import LeftSide from "../components/LeftSide";
-import { AppContext } from "../context";
-import { useContext, useEffect, useState } from "react";
-import NavBar from "../components/NavBar";
-import DialerPopup from "../components/dialer-popup";
+import type { NextPage } from 'next'
+import Head from 'next/head'
+import { useLocalization } from '../hooks/useLocalization'
+import dynamic from 'next/dynamic'
+import LeftSide from '../components/LeftSide'
+import { AppContext } from '../context'
+import { useContext, useEffect, useState } from 'react'
+import NavBar from '../components/NavBar'
+import DialerPopup from '../components/dialer-popup'
 
 const ChatUiWindow = dynamic(
-  () => import("../components/ChatWindow/ChatUiWindow"),
+  () => import('../components/ChatWindow/ChatUiWindow'),
   { ssr: false }
-);
+)
 
 const Home: NextPage = () => {
-  const t = useLocalization();
-  const context = useContext(AppContext);
+  const t = useLocalization()
+  const context = useContext(AppContext)
+  const [isDisable, setIsDisable] = useState(false)
 
   return (
     <>
       <Head>
-        <title> {t("label.title")}</title>
+        <title> {t('label.title')}</title>
       </Head>
       {context?.showDialerPopup && (
         <div>
@@ -32,23 +33,23 @@ const Home: NextPage = () => {
       )}
       <div
         style={{
-          width: "100vw",
-          height: "100vh",
-          display: "flex",
+          width: '100vw',
+          height: '100vh',
+          display: 'flex',
         }}
       >
         <div
           id="chatUI"
           style={{
-            visibility: "visible",
-            position: "fixed",
-            top: "0",
-            bottom: "0",
-            width: "100%",
+            visibility: 'visible',
+            position: 'fixed',
+            top: '0',
+            bottom: '0',
+            width: '100%',
           }}
         >
-          <NavBar />
-          <ChatUiWindow />
+          <NavBar setIsDisable={setIsDisable} />
+          <ChatUiWindow isDisable={isDisable} setIsDisable={setIsDisable} />
         </div>
       </div>
 
@@ -61,6 +62,6 @@ const Home: NextPage = () => {
         }
       `}</style>
     </>
-  );
-};
-export default Home;
+  )
+}
+export default Home

@@ -17,7 +17,10 @@ import { v4 as uuidv4 } from 'uuid'
 import toast from 'react-hot-toast'
 import RenderVoiceRecorder from '../recorder/RenderVoiceRecorder'
 
-const ChatUiWindow: React.FC = () => {
+const ChatUiWindow: React.FC<{
+  isDisable: boolean
+  setIsDisable: (val: boolean) => void
+}> = ({ isDisable, setIsDisable }) => {
   const t = useLocalization()
   const context = useContext(AppContext)
   const [divHeight, setDivHeight] = useState<any>('87%')
@@ -135,6 +138,8 @@ const ChatUiWindow: React.FC = () => {
               message={props}
               currentUser={context?.currentUser}
               onSend={handleSend}
+              isDisable={isDisable}
+              setIsDisable={setIsDisable}
             />
           )}
           onSend={handleSend}
