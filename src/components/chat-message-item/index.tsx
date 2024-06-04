@@ -301,6 +301,7 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
     // const newUserId = uuidv4();
     // localStorage.setItem("userID", newUserId);
     sessionStorage.setItem('conversationId', newConversationId)
+    setIsDisable(false)
     // context?.setConversationId(newConversationId);
     // toast.success("New chat started!");
   }
