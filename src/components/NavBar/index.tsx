@@ -34,6 +34,8 @@ function NavBar({ setIsDisable }: { setIsDisable: (val: boolean) => void }) {
 
   const toggleLanguage = React.useCallback(
     (newLanguage: string) => () => {
+      const newConversationId = uuidv4()
+      sessionStorage.setItem('conversationId', newConversationId)
       if (newLanguage === context?.locale) return
       const message =
         context?.locale === 'hi'
