@@ -19,6 +19,7 @@ import axios from 'axios'
 import { useCookies } from 'react-cookie'
 import { UCI } from 'socket-package'
 import { XMessage } from '@samagra-x/xmessage'
+import saveTelemetryEvent from '../utils/telemetry'
 
 function loadMessages(locale: string) {
   switch (locale) {
@@ -70,6 +71,11 @@ const ContextProvider: FC<{
   const [activeAudioId, setActiveAudioId] = useState(null)
   const [newConversationId, setNewConversationId] = useState(uuidv4())
   const [newSocket, setNewSocket] = useState<any>()
+
+  const [endTime, setEndTime] = useState(Date.now())
+  const [startTime, setStartTime] = useState(Date.now())
+
+  const [s2tMsgId, sets2tMsgId] = useState('')
 
   const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || ''
   const UserId = localStorage.getItem('userID')
@@ -432,28 +438,27 @@ const ContextProvider: FC<{
 
               updatedMessages.push(newMsg)
               // console.log('useeffect', newMsg.text);
-              // try {
-              //   saveTelemetryEvent('0.1', 'E017', 'userQuery', 'responseAt', {
-              //     botId: process.env.NEXT_PUBLIC_BOT_ID || '',
-              //     orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
-              //     userId: localStorage.getItem('userID') || '',
-              //     phoneNumber: localStorage.getItem('phoneNumber') || '',
-              //     conversationId:
-              //       sessionStorage.getItem('conversationId') || '',
-              //     messageId: msg.messageId.replyId,
-              //     text: '',
-              //     timeTaken: 0,
-              //   })
-              // } catch (err) {
-              //   console.error(err)
-              // }
+              try {
+                saveTelemetryEvent('0.1', 'E017', 'userQuery', 'responseAt', {
+                  botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+                  orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+                  userId: localStorage.getItem('userID') || '',
+                  conversationId:
+                    sessionStorage.getItem('conversationId') || '',
+                  messageId: msg.messageId.replyId,
+                  text: '',
+                  timeTaken: 0,
+                })
+              } catch (err) {
+                console.error(err)
+              }
             }
             return updatedMessages
           })
           setIsMsgReceiving(false)
-          // if (msg.payload.text.endsWith('<end/>')) {
-          //   setEndTime(Date.now())
-          // }
+          if (msg.payload.text.endsWith('<end/>')) {
+            setEndTime(Date.now())
+          }
           setLoading(false)
         }
       }
@@ -493,6 +498,35 @@ const ContextProvider: FC<{
   // useEffect(() => {
   //   getConversations();
   // }, [getConversations, conversationId]);
+  useEffect(() => {
+    const postTelemetry = async () => {
+      console.log('MESSAGE:', messages)
+      if (messages.length > 0)
+        try {
+          await saveTelemetryEvent(
+            '0.1',
+            'E033',
+            'messageQuery',
+            'messageReceived',
+            {
+              botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+              orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+              userId: localStorage.getItem('userID') || '',
+              phoneNumber: localStorage.getItem('phoneNumber') || '',
+              conversationId: sessionStorage.getItem('conversationId') || '',
+              replyId: messages?.[messages.length - 2]?.messageId,
+              messageId: messages?.[messages.length - 1]?.messageId,
+              text: messages[messages.length - 1]?.text,
+              createdAt: Math.floor(new Date().getTime() / 1000),
+              timeTaken: endTime - startTime,
+            }
+          )
+        } catch (err) {
+          console.log(err)
+        }
+    }
+    postTelemetry()
+  }, [endTime])
 
   const onMessageReceived = useCallback(
     async (msg: any) => {
@@ -558,6 +592,9 @@ const ContextProvider: FC<{
       setLoading(true)
 
       //  console.log('mssgs:',messages)
+      const messageId = s2tMsgId ? s2tMsgId : uuidv4()
+      setStartTime(Date.now())
+
       if (media) {
         if (media.mimeType.slice(0, 5) === 'image') {
         } else if (media.mimeType.slice(0, 5) === 'audio') {
@@ -566,7 +603,6 @@ const ContextProvider: FC<{
         } else {
         }
       } else {
-        const msgId = uuidv4()
         //console.log('mssgs:',messages)
         //@ts-ignore
         setMessages((prev: any) => [
@@ -579,7 +615,7 @@ const ContextProvider: FC<{
             payload: { text },
             time: Date.now(),
             disabled: true,
-            messageId: msgId,
+            messageId: messageId,
             repliedTimestamp: Date.now(),
           },
         ])
@@ -597,9 +633,6 @@ const ContextProvider: FC<{
         }
 
         try {
-          // const messageId = s2tMsgId ? s2tMsgId : uuidv4()
-          const messageId = uuidv4()
-
           newSocket.sendMessage({
             payload: {
               app: process.env.NEXT_PUBLIC_BOT_ID || '',
@@ -672,6 +705,20 @@ const ContextProvider: FC<{
           // console.log(error)
         }
       }
+      try {
+        await saveTelemetryEvent('0.1', 'E032', 'messageQuery', 'messageSent', {
+          botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+          orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+          userId: localStorage.getItem('userID') || '',
+          conversationId: sessionStorage.getItem('conversationId') || '',
+          messageId: messageId,
+          text: text,
+          createdAt: Math.floor(new Date().getTime() / 1000),
+        })
+      } catch (err) {
+        console.error(err)
+      }
+      sets2tMsgId('')
     },
     [currentUser?.id, locale, newSocket, onMessageReceived, newConversationId]
   )

@@ -43,6 +43,7 @@ import { Button } from '@chakra-ui/react'
 import { useCookies } from 'react-cookie'
 import Loader from '../loader'
 import { Backdrop } from '@material-ui/core'
+import saveTelemetryEvent from '../../utils/telemetry'
 
 const getToastMessage = (t: any, reaction: number): string => {
   if (reaction === 1) return t('toast.reaction_like')
@@ -320,22 +321,21 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
       }
       context?.playAudio(url, content)
       setTtsLoader(false)
-      // saveTelemetryEvent('0.1', 'E015', 'userQuery', 'timesAudioUsed', {
-      //   botId: process.env.NEXT_PUBLIC_BOT_ID || '',
-      //   orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
-      //   userId: localStorage.getItem('userID') || '',
-      //   phoneNumber: localStorage.getItem('phoneNumber') || '',
-      //   conversationId: sessionStorage.getItem('conversationId') || '',
-      //   messageId: content?.data?.messageId,
-      //   text: content?.text,
-      //   timesAudioUsed: 1,
-      // })
+      saveTelemetryEvent('0.1', 'E015', 'userQuery', 'timesAudioUsed', {
+        botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+        orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+        userId: localStorage.getItem('userID') || '',
+        conversationId: sessionStorage.getItem('conversationId') || '',
+        messageId: content?.data?.messageId,
+        text: content?.text,
+        timesAudioUsed: 1,
+      })
     },
     [audioFetched, content, context?.playAudio]
   )
   const downloadAudio = useCallback(() => {
     const fetchAudio = async (text: string) => {
-      // const startTime = Date.now()
+      const startTime = Date.now()
       try {
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_TEXT_TO_SPEECH}`,
@@ -356,52 +356,50 @@ const ChatMessageItem: FC<ChatMessageItemPropType> = ({
           }
         )
         setAudioFetched(true)
-        // const endTime = Date.now()
-        // const latency = endTime - startTime
-        // await saveTelemetryEvent(
-        //   '0.1',
-        //   'E045',
-        //   'aiToolProxyToolLatency',
-        //   't2sLatency',
-        //   {
-        //     botId: process.env.NEXT_PUBLIC_BOT_ID || '',
-        //     orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
-        //     userId: localStorage.getItem('userID') || '',
-        //     phoneNumber: localStorage.getItem('phoneNumber') || '',
-        //     conversationId: sessionStorage.getItem('conversationId') || '',
-        //     text: text,
-        //     messageId: content?.data?.messageId,
-        //     timeTaken: latency,
-        //     createdAt: Math.floor(startTime / 1000),
-        //     audioUrl: response?.data?.url || 'No audio URL',
-        //   }
-        // )
+        const endTime = Date.now()
+        const latency = endTime - startTime
+        await saveTelemetryEvent(
+          '0.1',
+          'E045',
+          'aiToolProxyToolLatency',
+          't2sLatency',
+          {
+            botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+            orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+            userId: localStorage.getItem('userID') || '',
+            conversationId: sessionStorage.getItem('conversationId') || '',
+            text: text,
+            messageId: content?.data?.messageId,
+            timeTaken: latency,
+            createdAt: Math.floor(startTime / 1000),
+            audioUrl: response?.data?.url || 'No audio URL',
+          }
+        )
         // cacheAudio(response.data);
         console.log('audio respo', response.data)
         return response?.data?.base64
       } catch (error: any) {
         console.error('Error fetching audio:', error)
         setAudioFetched(true)
-        // const endTime = Date.now()
-        // const latency = endTime - startTime
-        // await saveTelemetryEvent(
-        //   '0.1',
-        //   'E045',
-        //   'aiToolProxyToolLatency',
-        //   't2sLatency',
-        //   {
-        //     botId: process.env.NEXT_PUBLIC_BOT_ID || '',
-        //     orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
-        //     userId: localStorage.getItem('userID') || '',
-        //     phoneNumber: localStorage.getItem('phoneNumber') || '',
-        //     conversationId: sessionStorage.getItem('conversationId') || '',
-        //     text: text,
-        //     msgId: content?.data?.messageId,
-        //     timeTaken: latency,
-        //     createdAt: Math.floor(startTime / 1000),
-        //     error: error?.message || 'Error fetching audio',
-        //   }
-        // )
+        const endTime = Date.now()
+        const latency = endTime - startTime
+        await saveTelemetryEvent(
+          '0.1',
+          'E045',
+          'aiToolProxyToolLatency',
+          't2sLatency',
+          {
+            botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+            orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+            userId: localStorage.getItem('userID') || '',
+            conversationId: sessionStorage.getItem('conversationId') || '',
+            text: text,
+            msgId: content?.data?.messageId,
+            timeTaken: latency,
+            createdAt: Math.floor(startTime / 1000),
+            error: error?.message || 'Error fetching audio',
+          }
+        )
         return null
       }
     }

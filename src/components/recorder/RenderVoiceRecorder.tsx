@@ -1,9 +1,12 @@
 import { useState, useContext } from 'react'
 import MicIcon from '@mui/icons-material/Mic'
 import styles from './styles.module.css'
+
+import { v4 as uuidv4 } from 'uuid'
 import toast from 'react-hot-toast'
 import { useLocalization } from '../../hooks'
 import { AppContext } from '../../context'
+import saveTelemetryEvent from '../../utils/telemetry'
 
 const RenderVoiceRecorder = ({ setInputMsg, tapToSpeak }: any) => {
   const t = useLocalization()
@@ -23,13 +26,12 @@ const RenderVoiceRecorder = ({ setInputMsg, tapToSpeak }: any) => {
 
   const startRecording = async () => {
     console.log('start recording ')
-    // saveTelemetryEvent('0.1', 'E044', 'micAction', 'micTap', {
-    //   botId: process.env.NEXT_PUBLIC_BOT_ID || '',
-    //   orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
-    //   userId: localStorage.getItem('userID') || '',
-    //   phoneNumber: localStorage.getItem('phoneNumber') || '',
-    //   conversationId: sessionStorage.getItem('conversationId') || '',
-    // })
+    saveTelemetryEvent('0.1', 'E044', 'micAction', 'micTap', {
+      botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+      orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+      userId: localStorage.getItem('userID') || '',
+      conversationId: sessionStorage.getItem('conversationId') || '',
+    })
     IS_RECORDING = true
     record()
   }
@@ -121,8 +123,8 @@ const RenderVoiceRecorder = ({ setInputMsg, tapToSpeak }: any) => {
 
   const makeComputeAPICall = async (blob: any) => {
     console.log('make ccompute rapi call', blob)
-    // const startTime = Date.now()
-    // const s2tMsgId = uuidv4()
+    const startTime = Date.now()
+    const s2tMsgId = uuidv4()
     // console.log('s2tMsgId:', s2tMsgId)
     try {
       setRecorderStatus('processing')
@@ -169,24 +171,23 @@ const RenderVoiceRecorder = ({ setInputMsg, tapToSpeak }: any) => {
         if (rsp_data.text === '')
           throw new Error('Unexpected end of JSON input')
         setInputMsg(rsp_data.text)
-        // const endTime = Date.now()
-        // const latency = endTime - startTime
-        // await saveTelemetryEvent(
-        //   '0.1',
-        //   'E046',
-        //   'aiToolProxyToolLatency',
-        //   's2tLatency',
-        //   {
-        //     botId: process.env.NEXT_PUBLIC_BOT_ID || '',
-        //     orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
-        //     userId: localStorage.getItem('userID') || '',
-        //     phoneNumber: localStorage.getItem('phoneNumber') || '',
-        //     conversationId: sessionStorage.getItem('conversationId') || '',
-        //     timeTaken: latency,
-        //     messageId: s2tMsgId,
-        //     createdAt: Math.floor(startTime / 1000),
-        //   }
-        // )
+        const endTime = Date.now()
+        const latency = endTime - startTime
+        await saveTelemetryEvent(
+          '0.1',
+          'E046',
+          'aiToolProxyToolLatency',
+          's2tLatency',
+          {
+            botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+            orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+            userId: localStorage.getItem('userID') || '',
+            conversationId: sessionStorage.getItem('conversationId') || '',
+            timeTaken: latency,
+            messageId: s2tMsgId,
+            createdAt: Math.floor(startTime / 1000),
+          }
+        )
       } else {
         toast.error(`${t('message.recorder_error')}`)
         console.log(resp)
@@ -208,25 +209,24 @@ const RenderVoiceRecorder = ({ setInputMsg, tapToSpeak }: any) => {
       toast.error(`${t('message.recorder_error')}`)
       // Set isErrorClicked to true when an error occurs
       setIsErrorClicked(false)
-      // const endTime = Date.now()
-      // const latency = endTime - startTime
-      // await saveTelemetryEvent(
-      //   '0.1',
-      //   'E046',
-      //   'aiToolProxyToolLatency',
-      //   's2tLatency',
-      //   {
-      //     botId: process.env.NEXT_PUBLIC_BOT_ID || '',
-      //     orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
-      //     userId: localStorage.getItem('userID') || '',
-      //     phoneNumber: localStorage.getItem('phoneNumber') || '',
-      //     conversationId: sessionStorage.getItem('conversationId') || '',
-      //     timeTaken: latency,
-      //     messageId: s2tMsgId,
-      //     createdAt: Math.floor(startTime / 1000),
-      //     error: error?.message || t('message.recorder_error'),
-      //   }
-      // )
+      const endTime = Date.now()
+      const latency = endTime - startTime
+      await saveTelemetryEvent(
+        '0.1',
+        'E046',
+        'aiToolProxyToolLatency',
+        's2tLatency',
+        {
+          botId: process.env.NEXT_PUBLIC_BOT_ID || '',
+          orgId: process.env.NEXT_PUBLIC_ORG_ID || '',
+          userId: localStorage.getItem('userID') || '',
+          conversationId: sessionStorage.getItem('conversationId') || '',
+          timeTaken: latency,
+          messageId: s2tMsgId,
+          createdAt: Math.floor(startTime / 1000),
+          error: error?.message || t('message.recorder_error'),
+        }
+      )
 
       // Automatically change back to startIcon after 3 seconds
       setTimeout(() => {
