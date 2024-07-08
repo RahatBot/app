@@ -109,7 +109,7 @@ function NavBar({ setIsDisable }: { setIsDisable: (val: boolean) => void }) {
             alt=""
             width={110}
             height={65}
-            style={{ marginBottom: '8px' }}
+            style={{ marginBottom: '10px' }}
           />
           <div
             style={{
@@ -195,7 +195,7 @@ function NavBar({ setIsDisable }: { setIsDisable: (val: boolean) => void }) {
               alt=""
               width={110}
               height={65}
-              style={{ marginBottom: '8px' }}
+              style={{ marginBottom: '10px' }}
             />
           </div>
         </div>
