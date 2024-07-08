@@ -16,6 +16,8 @@ import axios from 'axios'
 import React from 'react'
 import { useCookies } from 'react-cookie'
 import { Sidemenu } from '../Sidemenu'
+import BhashiniImage from '../../assets/images/bhashinilogo.png'
+import { Typography } from '@material-ui/core'
 
 function NavBar({ setIsDisable }: { setIsDisable: (val: boolean) => void }) {
   const t = useLocalization()
@@ -102,7 +104,47 @@ function NavBar({ setIsDisable }: { setIsDisable: (val: boolean) => void }) {
           <Image src={UPGovtLogo} alt="" width={60} height={60} />
         </div>
         <div>
-          <Image src={YogiModiImg} alt="" width={110} height={65} />
+          <Image
+            src={YogiModiImg}
+            alt=""
+            width={110}
+            height={65}
+            style={{ marginBottom: '8px' }}
+          />
+          <div
+            style={{
+              fontSize: '0.8em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+            }}
+          >
+            Powered by
+            <Image
+              src={BhashiniImage.src}
+              alt="bhashini logo"
+              width={100}
+              height={20}
+            />{' '}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              marginTop: '-35px',
+              marginLeft: '250px',
+            }}
+          >
+            <Typography style={{ fontSize: '0.6em' }}> Powered by</Typography>
+            <Image
+              src={BhashiniImage.src}
+              alt="bhashini logo"
+              width={70}
+              height={30}
+            />{' '}
+          </div>
         </div>
       </div>
     )
@@ -133,18 +175,48 @@ function NavBar({ setIsDisable }: { setIsDisable: (val: boolean) => void }) {
             </button>
           </div>
 
-          <div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              flexDirection: 'column',
+            }}
+          >
             <Image src={UPGovtLogo} alt="" width={60} height={60} />
+            <div
+              className={styles.title}
+              dangerouslySetInnerHTML={{ __html: t('label.title') }}
+              style={{ marginTop: '4px' }}
+            ></div>
           </div>
           <div>
-            <Image src={YogiModiImg} alt="" width={110} height={65} />
+            <Image
+              src={YogiModiImg}
+              alt=""
+              width={110}
+              height={65}
+              style={{ marginBottom: '8px' }}
+            />
           </div>
         </div>
-
         <div
-          className={styles.title}
-          dangerouslySetInnerHTML={{ __html: t('label.title') }}
-        ></div>
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '10px',
+            marginTop: '-35px',
+            marginLeft: '250px',
+          }}
+        >
+          <Typography style={{ fontSize: '0.6em' }}> Powered by</Typography>
+          <Image
+            src={BhashiniImage.src}
+            alt="bhashini logo"
+            width={70}
+            height={30}
+          />{' '}
+        </div>
       </div>
     )
 }
