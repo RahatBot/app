@@ -103,14 +103,8 @@ function NavBar({ setIsDisable }: { setIsDisable: (val: boolean) => void }) {
         <div>
           <Image src={UPGovtLogo} alt="" width={60} height={60} />
         </div>
-        <div>
-          <Image
-            src={YogiModiImg}
-            alt=""
-            width={110}
-            height={65}
-            style={{ marginBottom: '10px' }}
-          />
+        <div style={{ marginBottom: '12px' }}>
+          <Image src={YogiModiImg} alt="" width={110} height={65} />
           <div
             style={{
               fontSize: '0.8em',
@@ -189,14 +183,8 @@ function NavBar({ setIsDisable }: { setIsDisable: (val: boolean) => void }) {
               style={{ marginTop: '4px' }}
             ></div>
           </div>
-          <div>
-            <Image
-              src={YogiModiImg}
-              alt=""
-              width={110}
-              height={65}
-              style={{ marginBottom: '10px' }}
-            />
+          <div style={{ marginBottom: '12px' }}>
+            <Image src={YogiModiImg} alt="" width={110} height={65} />
           </div>
         </div>
         <div
